@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JetQuest CAPTCHA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            touch-action: manipulation;
+        }
+
+        .captcha-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-logo {
+            font-size: 64px;
+            margin-bottom: 10px;
+        }
+
+        .brand-name {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .brand-tagline {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .game-title {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .instructions {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .route-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-radius: 12px;
+        }
+
+        .city {
+            text-align: center;
+        }
+
+        .city-icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .city-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .arrow {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            color: #3b82f6;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 3px solid #3b82f6;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #drawCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .endpoint {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .start-point {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+        }
+
+        .end-point {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+        }
+
+        .progress-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .progress-indicator {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: #d1fae5;
+            border-radius: 12px;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .promo-banner {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .promo-text {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .promo-code {
+            font-size: 18px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        .hint-text {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="captcha-container">
+        <div class="brand-header">
+            <div class="brand-logo">✈️</div>
+            <div class="brand-name">JetQuest</div>
+            <div class="brand-tagline">Your Journey Awaits</div>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
+            <div style="font-size: 18px; font-weight: 700; color: #10b981;">Route Complete!</div>
+            <div style="font-size: 14px; color: #666; margin-top: 5px;">Redirecting...</div>
+        </div>
+
+        <div id="gameContent">
+            <div class="game-title">Draw your flight path</div>
+            <div class="instructions">Connect the departure to arrival city</div>
+
+            <div class="route-info">
+                <div class="city">
+                    <div class="city-icon">🌆</div>
+                    <div class="city-name">New York</div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="city">
+                    <div class="city-icon">🗼</div>
+                    <div class="city-name">Paris</div>
+                </div>
+            </div>
+
+            <div class="progress-display">
+                <div class="progress-text">Flight Progress</div>
+                <div class="progress-indicator">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="drawCanvas"></canvas>
+                <div class="endpoint start-point">🛫</div>
+                <div class="endpoint end-point">🛬</div>
+            </div>
+
+            <div class="hint-text">Draw from left to right</div>
+
+            <div class="promo-banner">
+                <div class="promo-text">Book your dream vacation. Save 25%:</div>
+                <div class="promo-code">JET25</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('drawCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        resizeCanvas();
+
+        let isDrawing = false;
+        let pathPoints = [];
+        let startPoint = { x: 40, y: canvas.height / 2 };
+        let endPoint = { x: canvas.width - 40, y: canvas.height / 2 };
+
+        function playSound(frequency, duration = 0.1) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function vibrate(duration = 10) {
+            if (navigator.vibrate) {
+                navigator.vibrate(duration);
+            }
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', endDrawing);
+        
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', endDrawing);
+
+        function startDrawing(e) {
+            e.preventDefault();
+            const point = getPoint(e);
+            
+            // Check if starting near start point
+            const distToStart = Math.hypot(point.x - startPoint.x, point.y - startPoint.y);
+            if (distToStart < 50) {
+                isDrawing = true;
+                pathPoints = [point];
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                playSound(600);
+                vibrate(15);
+            }
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            
+            const point = getPoint(e);
+            pathPoints.push(point);
+            
+            // Draw line
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            if (pathPoints.length > 1) {
+                const prev = pathPoints[pathPoints.length - 2];
+                ctx.beginPath();
+                ctx.moveTo(prev.x, prev.y);
+                ctx.lineTo(point.x, point.y);
+                ctx.stroke();
+            }
+            
+            // Update progress
+            const progress = Math.min(100, (point.x / canvas.width) * 100);
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            // Play subtle sound periodically
+            if (pathPoints.length % 5 === 0) {
+                playSound(700 + progress * 3, 0.05);
+                vibrate(5);
+            }
+        }
+
+        function endDrawing(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            
+            const point = getPoint(e);
+            const distToEnd = Math.hypot(point.x - endPoint.x, point.y - endPoint.y);
+            
+            if (distToEnd < 50 && pathPoints.length > 20) {
+                checkPath();
+            } else {
+                // Failed - reset
+                playSound(300);
+                vibrate([50, 50, 50]);
+                resetCanvas();
+            }
+            
+            isDrawing = false;
+        }
+
+        function getPoint(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top,
+                time: Date.now()
+            };
+        }
+
+        function checkPath() {
+            // Analyze path for human-like characteristics
+            const pathLength = calculatePathLength();
+            const straightLineDistance = Math.hypot(
+                endPoint.x - startPoint.x,
+                endPoint.y - startPoint.y
+            );
+            
+            // Calculate path smoothness (variance in direction changes)
+            const directionChanges = calculateDirectionChanges();
+            const avgSpeed = pathLength / pathPoints[pathPoints.length - 1].time - pathPoints[0].time;
+            
+            // Humans draw with some waviness, not perfectly straight
+            const pathRatio = pathLength / straightLineDistance;
+            const hasNaturalCurve = pathRatio > 1.05 && pathRatio < 2.0;
+            const hasVariedSpeed = avgSpeed > 0.1 && avgSpeed < 3;
+            const hasNaturalVariation = directionChanges > 10 && directionChanges < 100;
+            
+            const isHuman = hasNaturalCurve && hasVariedSpeed && hasNaturalVariation;
+            
+            if (isHuman) {
+                completeGame();
+            } else {
+                playSound(300);
+                vibrate([50, 50, 50]);
+                resetCanvas();
+            }
+        }
+
+        function calculatePathLength() {
+            let length = 0;
+            for (let i = 1; i < pathPoints.length; i++) {
+                const dx = pathPoints[i].x - pathPoints[i - 1].x;
+                const dy = pathPoints[i].y - pathPoints[i - 1].y;
+                length += Math.hypot(dx, dy);
+            }
+            return length;
+        }
+
+        function calculateDirectionChanges() {
+            let changes = 0;
+            for (let i = 2; i < pathPoints.length; i++) {
+                const angle1 = Math.atan2(
+                    pathPoints[i - 1].y - pathPoints[i - 2].y,
+                    pathPoints[i - 1].x - pathPoints[i - 2].x
+                );
+                const angle2 = Math.atan2(
+                    pathPoints[i].y - pathPoints[i - 1].y,
+                    pathPoints[i].x - pathPoints[i - 1].x
+                );
+                const angleDiff = Math.abs(angle2 - angle1);
+                if (angleDiff > 0.1) changes++;
+            }
+            return changes;
+        }
+
+        function resetCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            pathPoints = [];
+            document.getElementById('progressFill').style.width = '0%';
+        }
+
+        function completeGame() {
+            playSound(900, 0.2);
+            vibrate([20, 50, 20, 50, 20]);
+            
+            // Draw completion effect
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            pathPoints.forEach((point, i) => {
+                if (i === 0) {
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    ctx.lineTo(point.x, point.y);
+                }
+            });
+            ctx.stroke();
+            
+            setTimeout(() => {
+                document.getElementById('gameContent').style.display = 'none';
+                document.getElementById('successMessage').classList.add('show');
+                
+                setTimeout(() => {
+                    window.parent.postMessage('captcha_success', '*');
+                }, 1500);
+            }, 500);
+        }
+    </script>
+</body>
+</html>
