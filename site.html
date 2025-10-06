@@ -300,7 +300,7 @@
 <body>
     <div class="background"></div>
 
-    <a href="publisher-dashboard.html" class="back-link">← Back to Dashboard</a>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
 
     <header class="header">
         <div class="header-container">
@@ -450,7 +450,8 @@
             // Create iframe
             const iframe = document.createElement('iframe');
             iframe.style.width = '100%';
-            iframe.style.height = '700px';
+            iframe.style.height = '90vh';
+            iframe.style.maxHeight = '750px';
             iframe.style.border = 'none';
             iframe.style.borderRadius = '24px';
             iframe.src = captchaFiles[selectedCaptcha];
