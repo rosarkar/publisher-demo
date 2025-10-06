@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BurgerBlast CAPTCHA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8c42 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .captcha-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-logo {
+            font-size: 64px;
+            margin-bottom: 10px;
+        }
+
+        .brand-name {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+
+        .brand-tagline {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .game-title {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .game-item {
+            aspect-ratio: 1;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        .game-item:hover {
+            transform: scale(1.05);
+            border-color: #ff6b6b;
+        }
+
+        .game-item.selected {
+            border-color: #ff6b6b;
+            background: #fff5f5;
+            transform: scale(0.95);
+        }
+
+        .game-item.correct {
+            border-color: #10b981;
+            background: #d1fae5;
+            animation: correctPulse 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .verify-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8c42 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .verify-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .verify-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .instructions {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: #d1fae5;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .promo-banner {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .promo-text {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .promo-code {
+            font-size: 18px;
+            font-weight: 800;
+            color: #ff6b6b;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="captcha-container">
+        <div class="brand-header">
+            <div class="brand-logo">🍔</div>
+            <div class="brand-name">BurgerBlast</div>
+            <div class="brand-tagline">Flavor That Explodes!</div>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
+            <div style="font-size: 18px; font-weight: 700; color: #10b981;">Verified!</div>
+            <div style="font-size: 14px; color: #666; margin-top: 5px;">Redirecting...</div>
+        </div>
+
+        <div id="gameContent">
+            <div class="game-title">Select all the burgers 🍔</div>
+            <div class="instructions">Click on each burger you see</div>
+
+            <div class="game-board" id="gameBoard"></div>
+
+            <button class="verify-button" id="verifyButton" onclick="verifySelection()">
+                Verify Selection
+            </button>
+
+            <div class="promo-banner">
+                <div class="promo-text">Get 20% off your next order with code:</div>
+                <div class="promo-code">BLAST20</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const items = ['🍔', '🍕', '🌭', '🍔', '🥗', '🍟', '🍔', '🥤', '🍔'];
+        const correctItems = [0, 3, 6, 8]; // Indices of burgers
+        let selectedItems = [];
+
+        function initGame() {
+            const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'game-item';
+                div.textContent = item;
+                div.onclick = () => toggleItem(index, div);
+                gameBoard.appendChild(div);
+            });
+        }
+
+        function toggleItem(index, element) {
+            if (selectedItems.includes(index)) {
+                selectedItems = selectedItems.filter(i => i !== index);
+                element.classList.remove('selected');
+            } else {
+                selectedItems.push(index);
+                element.classList.add('selected');
+            }
+        }
+
+        function verifySelection() {
+            const allCorrect = correctItems.every(i => selectedItems.includes(i));
+            const noExtra = selectedItems.every(i => correctItems.includes(i));
+
+            if (allCorrect && noExtra) {
+                // Mark correct items
+                document.querySelectorAll('.game-item').forEach((item, index) => {
+                    if (correctItems.includes(index)) {
+                        item.classList.add('correct');
+                    }
+                });
+
+                // Show success message
+                setTimeout(() => {
+                    document.getElementById('gameContent').style.display = 'none';
+                    document.getElementById('successMessage').classList.add('show');
+
+                    // Send success message to parent
+                    setTimeout(() => {
+                        window.parent.postMessage('captcha_success', '*');
+                    }, 1500);
+                }, 500);
+            } else {
+                // Wrong selection - shake animation
+                const container = document.querySelector('.captcha-container');
+                container.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    container.style.animation = '';
+                    selectedItems = [];
+                    document.querySelectorAll('.game-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                }, 500);
+            }
+        }
+
+        // Initialize game on load
+        initGame();
+    </script>
+
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    </style>
+</body>
+</html>
