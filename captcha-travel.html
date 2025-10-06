@@ -379,7 +379,7 @@
             const point = getPoint(e);
             const distToEnd = Math.hypot(point.x - endPoint.x, point.y - endPoint.y);
             
-            if (distToEnd < 50 && pathPoints.length > 20) {
+            if (distToEnd < 50 && pathPoints.length > 15) {
                 checkPath();
             } else {
                 // Failed - reset
@@ -411,17 +411,17 @@
                 endPoint.y - startPoint.y
             );
             
-            // Calculate path smoothness (variance in direction changes)
+            // Calculate metrics
             const directionChanges = calculateDirectionChanges();
-            const avgSpeed = pathLength / pathPoints[pathPoints.length - 1].time - pathPoints[0].time;
+            const duration = pathPoints[pathPoints.length - 1].time - pathPoints[0].time;
             
-            // Humans draw with some waviness, not perfectly straight
+            // More lenient validation - humans draw with some waviness
             const pathRatio = pathLength / straightLineDistance;
-            const hasNaturalCurve = pathRatio > 1.05 && pathRatio < 2.0;
-            const hasVariedSpeed = avgSpeed > 0.1 && avgSpeed < 3;
-            const hasNaturalVariation = directionChanges > 10 && directionChanges < 100;
+            const hasReasonablePath = pathRatio > 1.02 && pathRatio < 3.0;
+            const hasReasonableDuration = duration > 200 && duration < 10000;
+            const hasVariation = directionChanges > 5 && directionChanges < 200;
             
-            const isHuman = hasNaturalCurve && hasVariedSpeed && hasNaturalVariation;
+            const isHuman = hasReasonablePath && hasReasonableDuration && hasVariation && pathPoints.length > 15;
             
             if (isHuman) {
                 completeGame();
