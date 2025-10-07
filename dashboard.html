@@ -199,6 +199,65 @@
             gap: 10px;
         }
 
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .controls-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 160px;
+        }
+
+        .filter-select:hover,
+        .filter-select:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(102, 126, 234, 0.3);
+            outline: none;
+        }
+
+        .filter-select option {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .search-input {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(102, 126, 234, 0.3);
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: #8892b0;
+        }
+
         .bids-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -426,6 +485,21 @@
             .bids-grid {
                 grid-template-columns: 1fr;
             }
+
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .controls-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .filter-select,
+            .search-input {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -478,7 +552,30 @@
             </div>
         </div>
 
-        <h2 class="section-title">💰 Current Bids</h2>
+        <div class="section-header" style="margin-bottom: 24px;">
+            <h2 class="section-title" style="margin: 0;">💰 Current Bids</h2>
+            <div class="controls-group" style="display: flex; gap: 12px; align-items: center;">
+                <div class="filter-group">
+                    <select id="sortSelect" class="filter-select" onchange="applySortAndFilter()">
+                        <option value="cpm-high">Highest CPM</option>
+                        <option value="cpm-low">Lowest CPM</option>
+                        <option value="budget-high">Highest Budget</option>
+                        <option value="engagement">Best Engagement</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select id="categoryFilter" class="filter-select" onchange="applySortAndFilter()">
+                        <option value="all">All Categories</option>
+                        <option value="Food & Beverage">Food & Beverage</option>
+                        <option value="Gaming Platform">Gaming</option>
+                        <option value="Cryptocurrency">Crypto</option>
+                        <option value="Health & Fitness">Fitness</option>
+                        <option value="Travel Agency">Travel</option>
+                    </select>
+                </div>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search brands..." oninput="applySortAndFilter()">
+            </div>
+        </div>
 
         <div class="bids-grid" id="bidsGrid">
             <!-- Bids will be dynamically loaded here -->
@@ -541,12 +638,58 @@
             
             if (campaigns.length === 0) {
                 renderEmptyState();
-                updateStats(campaigns);
+                updateStats([]);
                 return;
             }
 
-            renderBids(campaigns);
-            updateStats(campaigns);
+            // Apply sorting and filtering
+            const filteredCampaigns = applySortAndFilterToCampaigns(campaigns);
+            renderBids(filteredCampaigns);
+            updateStats(campaigns); // Stats use all campaigns, not filtered
+        }
+
+        function applySortAndFilterToCampaigns(campaigns) {
+            let filtered = [...campaigns];
+            
+            // Apply category filter
+            const categoryFilter = document.getElementById('categoryFilter')?.value || 'all';
+            if (categoryFilter !== 'all') {
+                filtered = filtered.filter(c => {
+                    const metadata = captchaMetadata[c.captchaType];
+                    return metadata.defaultCategory === categoryFilter;
+                });
+            }
+            
+            // Apply search filter
+            const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            if (searchTerm) {
+                filtered = filtered.filter(c => 
+                    c.brandName.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Apply sorting
+            const sortBy = document.getElementById('sortSelect')?.value || 'cpm-high';
+            switch(sortBy) {
+                case 'cpm-high':
+                    filtered.sort((a, b) => b.cpmBid - a.cpmBid);
+                    break;
+                case 'cpm-low':
+                    filtered.sort((a, b) => a.cpmBid - b.cpmBid);
+                    break;
+                case 'budget-high':
+                    filtered.sort((a, b) => b.dailyBudget - a.dailyBudget);
+                    break;
+                case 'engagement':
+                    filtered.sort((a, b) => (b.successRate || 0) - (a.successRate || 0));
+                    break;
+            }
+            
+            return filtered;
+        }
+
+        function applySortAndFilter() {
+            loadCampaigns();
         }
 
         function renderEmptyState() {
@@ -562,6 +705,17 @@
 
         function renderBids(campaigns) {
             const grid = document.getElementById('bidsGrid');
+            
+            if (campaigns.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <h3>No matching bids found</h3>
+                        <p style="margin-top: 10px;">Try adjusting your filters or search terms</p>
+                    </div>
+                `;
+                return;
+            }
             
             grid.innerHTML = campaigns.map((campaign, index) => {
                 const metadata = captchaMetadata[campaign.captchaType];
@@ -580,7 +734,7 @@
                 }
                 
                 return `
-                    <div class="bid-card" onclick="selectBid('${campaign.captchaType}', ${index})" data-campaign-id="${index}">
+                    <div class="bid-card" onclick="selectBid('${campaign.captchaType}', ${index})" data-campaign-id="${index}" data-captcha-type="${campaign.captchaType}">
                         <div class="bid-header">
                             <div class="advertiser-info">
                                 <div class="advertiser-logo">${metadata.icon}</div>
@@ -639,14 +793,14 @@
             document.getElementById('verificationsValue').textContent = verificationsCount.toLocaleString();
         }
 
-        function selectBid(bidType, campaignIndex) {
+        function selectBid(bidType, displayIndex) {
             // Remove previous selection
             document.querySelectorAll('.bid-card').forEach(card => {
                 card.classList.remove('selected');
             });
 
-            // Add selection to clicked card
-            const clickedCard = document.querySelector(`[data-campaign-id="${campaignIndex}"]`);
+            // Add selection to clicked card using data attribute
+            const clickedCard = document.querySelector(`[data-captcha-type="${bidType}"]`);
             if (clickedCard) {
                 clickedCard.classList.add('selected');
             }
@@ -659,14 +813,16 @@
             // Activate demo link
             document.getElementById('demoLink').classList.add('active');
             
-            // Show selection confirmation
-            const campaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
-            const campaign = campaigns[campaignIndex];
-            const cpmPerVerification = (campaign.cpmBid / 1000).toFixed(2);
+            // Show selection confirmation - find campaign by captchaType
+            const allCampaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
+            const campaign = allCampaigns.find(c => c.captchaType === bidType && c.status === 'active');
             
-            document.getElementById('selectionText').textContent = 
-                `Selected: ${campaign.brandName} ($${cpmPerVerification}/verification)`;
-            document.getElementById('selectionText').style.display = 'block';
+            if (campaign) {
+                const cpmPerVerification = (campaign.cpmBid / 1000).toFixed(2);
+                document.getElementById('selectionText').textContent = 
+                    `Selected: ${campaign.brandName} ($${cpmPerVerification}/verification)`;
+                document.getElementById('selectionText').style.display = 'block';
+            }
         }
 
         // Simulate live activity - increment every 3-5 seconds
@@ -707,23 +863,25 @@
             
             const stored = localStorage.getItem('selectedCaptcha');
             if (stored) {
-                const campaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
-                const campaignIndex = campaigns.findIndex(c => c.captchaType === stored);
+                const allCampaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
+                const campaign = allCampaigns.find(c => c.captchaType === stored && c.status === 'active');
                 
-                if (campaignIndex !== -1) {
-                    const card = document.querySelector(`[data-campaign-id="${campaignIndex}"]`);
-                    if (card) {
-                        card.classList.add('selected');
-                    }
-                    
-                    selectedBid = stored;
-                    document.getElementById('demoLink').classList.add('active');
-                    
-                    const campaign = campaigns[campaignIndex];
-                    const cpmPerVerification = (campaign.cpmBid / 1000).toFixed(2);
-                    document.getElementById('selectionText').textContent = 
-                        `Selected: ${campaign.brandName} ($${cpmPerVerification}/verification)`;
-                    document.getElementById('selectionText').style.display = 'block';
+                if (campaign) {
+                    // Wait a bit for render to complete
+                    setTimeout(() => {
+                        const card = document.querySelector(`[data-captcha-type="${stored}"]`);
+                        if (card) {
+                            card.classList.add('selected');
+                        }
+                        
+                        selectedBid = stored;
+                        document.getElementById('demoLink').classList.add('active');
+                        
+                        const cpmPerVerification = (campaign.cpmBid / 1000).toFixed(2);
+                        document.getElementById('selectionText').textContent = 
+                            `Selected: ${campaign.brandName} ($${cpmPerVerification}/verification)`;
+                        document.getElementById('selectionText').style.display = 'block';
+                    }, 100);
                 }
             }
             
