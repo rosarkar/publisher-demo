@@ -9,18 +9,16 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            touch-action: manipulation;
         }
 
         .captcha-container {
@@ -45,7 +43,7 @@
         .brand-name {
             font-size: 28px;
             font-weight: 800;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
@@ -71,40 +69,27 @@
             margin-bottom: 20px;
         }
 
-        .game-area {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
-            border-radius: 16px;
+        .game-mode-badge {
+            text-align: center;
             margin-bottom: 20px;
-            overflow: hidden;
-            cursor: pointer;
-            border: 3px solid #e0e7ff;
+            padding: 10px;
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border-radius: 12px;
+            border: 2px solid #8b5cf6;
         }
 
-        .target {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-        }
-
-        .target:active {
-            transform: scale(0.85);
+        .mode-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #8b5cf6;
         }
 
         .score-display {
             text-align: center;
             margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 12px;
         }
 
         .score-label {
@@ -115,26 +100,55 @@
 
         .score-value {
             font-size: 32px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            color: #8b5cf6;
         }
 
-        .progress-bar {
+        .game-area {
+            position: relative;
             width: 100%;
-            height: 8px;
-            background: #e0e7ff;
-            border-radius: 4px;
-            overflow: hidden;
+            height: 300px;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border-radius: 16px;
             margin-bottom: 20px;
+            overflow: hidden;
+            border: 3px solid #e5e7eb;
+            cursor: crosshair;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
-            width: 0%;
-            transition: width 0.3s ease;
+        .target {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ef4444 0%, #dc2626 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .target:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .target.hit {
+            animation: hitEffect 0.3s ease;
+        }
+
+        @keyframes hitEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); background: #10b981; }
+            100% { transform: scale(0); }
         }
 
         .success-message {
@@ -158,7 +172,7 @@
         .promo-banner {
             text-align: center;
             padding: 15px;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
             border-radius: 12px;
             margin-top: 20px;
         }
@@ -172,30 +186,10 @@
         .promo-code {
             font-size: 18px;
             font-weight: 800;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: 2px;
-        }
-
-        .hit-effect {
-            position: absolute;
-            pointer-events: none;
-            font-size: 24px;
-            font-weight: 800;
-            color: #6366f1;
-            animation: floatUp 0.6s ease forwards;
-        }
-
-        @keyframes floatUp {
-            from {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            to {
-                opacity: 0;
-                transform: translateY(-50px) scale(1.5);
-            }
         }
     </style>
 </head>
@@ -204,96 +198,118 @@
         <div class="brand-header">
             <div class="brand-logo">🎮</div>
             <div class="brand-name">PixelArena</div>
-            <div class="brand-tagline">Where Gamers Unite</div>
+            <div class="brand-tagline">Where Champions Are Made</div>
         </div>
 
         <div class="success-message" id="successMessage">
-            <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
-            <div style="font-size: 18px; font-weight: 700; color: #10b981;">Victory!</div>
+            <div style="font-size: 40px; margin-bottom: 10px;">🏆</div>
+            <div style="font-size: 18px; font-weight: 700; color: #10b981;">Champion Verified!</div>
             <div style="font-size: 14px; color: #666; margin-top: 5px;">Redirecting...</div>
         </div>
 
         <div id="gameContent">
             <div class="game-title">Hit the targets!</div>
-            <div class="instructions">Tap 5 targets as fast as you can</div>
+            <div class="instructions" id="instructions">Click targets as fast as you can</div>
+
+            <div class="game-mode-badge" id="gameModeBadge"></div>
 
             <div class="score-display">
                 <div class="score-label">Targets Hit</div>
-                <div class="score-value" id="scoreValue">0 / 5</div>
-            </div>
-
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
+                <div class="score-value"><span id="score">0</span> / <span id="totalTargets">5</span></div>
             </div>
 
             <div class="game-area" id="gameArea"></div>
 
             <div class="promo-banner">
-                <div class="promo-text">Join 10M+ gamers. First month free:</div>
-                <div class="promo-code">PIXEL30</div>
+                <div class="promo-text">Join PixelArena and dominate:</div>
+                <div class="promo-code">ARENA50</div>
             </div>
         </div>
     </div>
 
     <script>
+        // Game modes with different themes
+        const gameModes = [
+            { name: 'Speed Run', icon: '⚡', color: '#ef4444' },
+            { name: 'Precision Mode', icon: '🎯', color: '#f59e0b' },
+            { name: 'Reflex Test', icon: '💫', color: '#8b5cf6' },
+            { name: 'Champion Challenge', icon: '👑', color: '#10b981' }
+        ];
+
+        const selectedMode = gameModes[Math.floor(Math.random() * gameModes.length)];
+        document.getElementById('gameModeBadge').innerHTML = `
+            <span style="font-size: 20px;">${selectedMode.icon}</span>
+            <div class="mode-name">${selectedMode.name}</div>
+        `;
+
         let score = 0;
-        const targetCount = 5;
+        const targetCount = Math.floor(Math.random() * 3) + 3; // 3-5 targets
+        document.getElementById('totalTargets').textContent = targetCount;
+        
         let currentTarget = null;
         const hitTimings = [];
         let gameStarted = false;
+        let audioContext = null;
+
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            }
+            return audioContext;
+        }
 
         const sounds = {
             hit: () => {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.value = 800;
-                oscillator.type = 'sine';
-                
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.1);
+                try {
+                    const ctx = initAudioContext();
+                    const oscillator = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+                    
+                    oscillator.frequency.value = 800;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                    
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 0.1);
+                } catch (e) {}
             },
             complete: () => {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.value = 600;
-                oscillator.type = 'sine';
-                
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.3);
-                
-                setTimeout(() => {
-                    oscillator.frequency.value = 800;
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.3);
-                }, 100);
+                try {
+                    const ctx = initAudioContext();
+                    [600, 800, 1000].forEach((freq, i) => {
+                        setTimeout(() => {
+                            const oscillator = ctx.createOscillator();
+                            const gainNode = ctx.createGain();
+                            
+                            oscillator.connect(gainNode);
+                            gainNode.connect(ctx.destination);
+                            
+                            oscillator.frequency.value = freq;
+                            oscillator.type = 'sine';
+                            
+                            gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                            
+                            oscillator.start(ctx.currentTime);
+                            oscillator.stop(ctx.currentTime + 0.2);
+                        }, i * 100);
+                    });
+                } catch (e) {}
             }
         };
 
-        function vibrate() {
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
-        }
-
         function spawnTarget() {
-            if (currentTarget) {
-                currentTarget.remove();
+            if (score >= targetCount) {
+                checkCompletion();
+                return;
             }
 
             const gameArea = document.getElementById('gameArea');
@@ -301,27 +317,18 @@
             target.className = 'target';
             target.textContent = '🎯';
 
+            // Random position
             const maxX = gameArea.clientWidth - 60;
             const maxY = gameArea.clientHeight - 60;
-            
             const x = Math.random() * maxX;
             const y = Math.random() * maxY;
-            
+
             target.style.left = x + 'px';
             target.style.top = y + 'px';
+            target.style.background = `radial-gradient(circle, ${selectedMode.color} 0%, ${selectedMode.color}dd 100%)`;
 
-            const timestamp = Date.now();
-            
-            target.addEventListener('click', (e) => {
-                e.stopPropagation();
-                handleHit(timestamp);
-            });
-
-            target.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleHit(timestamp);
-            }, { passive: false });
+            const spawnTime = Date.now();
+            target.onclick = () => hitTarget(target, spawnTime);
 
             gameArea.appendChild(target);
             currentTarget = target;
@@ -331,55 +338,44 @@
             }
         }
 
-        function handleHit(spawnTime) {
+        function hitTarget(target, spawnTime) {
             const hitTime = Date.now();
             const reactionTime = hitTime - spawnTime;
             hitTimings.push(reactionTime);
 
+            target.classList.add('hit');
             sounds.hit();
-            vibrate();
-
-            showHitEffect(event);
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(20);
+            }
 
             score++;
-            updateScore();
+            document.getElementById('score').textContent = score;
 
-            if (score < targetCount) {
-                setTimeout(spawnTarget, 200);
-            } else {
-                completeGame();
-            }
+            setTimeout(() => {
+                target.remove();
+                spawnTarget();
+            }, 300);
         }
 
-        function showHitEffect(event) {
-            const effect = document.createElement('div');
-            effect.className = 'hit-effect';
-            effect.textContent = '+1';
-            effect.style.left = event.clientX + 'px';
-            effect.style.top = event.clientY + 'px';
-            document.body.appendChild(effect);
-            setTimeout(() => effect.remove(), 600);
-        }
+        function checkCompletion() {
+            // Validate human-like timing
+            if (hitTimings.length < 3) return;
 
-        function updateScore() {
-            document.getElementById('scoreValue').textContent = `${score} / ${targetCount}`;
-            const progress = (score / targetCount) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
-        }
+            const avgTime = hitTimings.reduce((a, b) => a + b, 0) / hitTimings.length;
+            const variance = hitTimings.reduce((sum, time) => {
+                return sum + Math.pow(time - avgTime, 2);
+            }, 0) / hitTimings.length;
 
-        function completeGame() {
-            if (currentTarget) {
-                currentTarget.remove();
-            }
+            // Humans have varied reaction times (not too perfect, not too slow)
+            const hasHumanTiming = avgTime > 100 && avgTime < 2000 && variance > 1000;
 
-            const avgReactionTime = hitTimings.reduce((a, b) => a + b, 0) / hitTimings.length;
-            const timingVariance = Math.max(...hitTimings) - Math.min(...hitTimings);
-            
-            const isHuman = avgReactionTime > 100 && avgReactionTime < 1500 && timingVariance > 50;
-
-            if (isHuman) {
+            if (hasHumanTiming) {
                 sounds.complete();
-                vibrate();
+                if (navigator.vibrate) {
+                    navigator.vibrate([50, 100, 50]);
+                }
 
                 setTimeout(() => {
                     document.getElementById('gameContent').style.display = 'none';
@@ -390,13 +386,15 @@
                     }, 1500);
                 }, 500);
             } else {
+                // Reset for bot-like behavior
                 score = 0;
                 hitTimings.length = 0;
-                updateScore();
-                setTimeout(spawnTarget, 500);
+                document.getElementById('score').textContent = score;
+                spawnTarget();
             }
         }
 
+        // Start game
         spawnTarget();
     </script>
 </body>
