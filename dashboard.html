@@ -535,7 +535,9 @@
         };
 
         function loadCampaigns() {
-            const campaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
+            const allCampaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
+            // Only show active campaigns to publishers
+            const campaigns = allCampaigns.filter(c => c.status === 'active');
             
             if (campaigns.length === 0) {
                 renderEmptyState();
@@ -691,6 +693,13 @@
                 updateLiveStats(); // Schedule next update
             }, randomDelay);
         }
+
+        // Listen for storage events (real-time sync with advertiser dashboard)
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'advertiserCampaigns') {
+                loadCampaigns();
+            }
+        });
 
         // Check if there's a stored selection on page load
         window.addEventListener('load', () => {
