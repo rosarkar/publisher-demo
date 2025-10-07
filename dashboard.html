@@ -64,11 +64,97 @@
             border: 1px solid rgba(102, 126, 234, 0.2);
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .user-profile:hover {
             background: rgba(102, 126, 234, 0.15);
             border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .publisher-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 8px;
+            min-width: 240px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .publisher-dropdown.active {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 8px;
+        }
+
+        .dropdown-title {
+            font-size: 11px;
+            color: #8892b0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .publisher-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 4px;
+        }
+
+        .publisher-option:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .publisher-option.current {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .publisher-option-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .publisher-option-info {
+            flex: 1;
+        }
+
+        .publisher-option-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .publisher-option-desc {
+            font-size: 11px;
+            color: #8892b0;
+        }
+
+        .checkmark {
+            color: #22c55e;
+            font-size: 16px;
         }
 
         .user-avatar {
@@ -535,13 +621,33 @@
                 <div class="logo">Canvas Protocol</div>
                 <div class="dashboard-subtitle">Publisher Dashboard</div>
             </div>
-            <div class="user-profile">
+            <div class="user-profile" onclick="togglePublisherDropdown()">
                 <div class="user-avatar">📰</div>
                 <div class="user-details">
                     <div class="publisher-name">TechDaily News</div>
                     <div class="user-role">Publisher Account</div>
                 </div>
                 <div class="menu-icon">▼</div>
+                <div class="publisher-dropdown" id="publisherDropdown" onclick="event.stopPropagation()">
+                    <div class="dropdown-header">
+                        <div class="dropdown-title">Switch Publisher</div>
+                    </div>
+                    <a href="dashboard.html" class="publisher-option current">
+                        <div class="publisher-option-avatar">📰</div>
+                        <div class="publisher-option-info">
+                            <div class="publisher-option-name">TechDaily News</div>
+                            <div class="publisher-option-desc">Tech & AI • 50K daily</div>
+                        </div>
+                        <div class="checkmark">✓</div>
+                    </a>
+                    <a href="dashboard-fitness.html" class="publisher-option">
+                        <div class="publisher-option-avatar" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);">💪</div>
+                        <div class="publisher-option-info">
+                            <div class="publisher-option-name">FitLife Journal</div>
+                            <div class="publisher-option-desc">Health & Fitness • 35K daily</div>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
@@ -665,8 +771,11 @@
 
         function loadCampaigns() {
             const allCampaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
-            // Only show active campaigns to publishers
-            const campaigns = allCampaigns.filter(c => c.status === 'active');
+            // Only show active campaigns targeting this publisher (tech)
+            const campaigns = allCampaigns.filter(c => 
+                c.status === 'active' && 
+                (c.targetPublishers || ['tech', 'fitness', 'crypto']).includes('tech')
+            );
             
             if (campaigns.length === 0) {
                 renderEmptyState();
@@ -886,6 +995,20 @@
         window.addEventListener('storage', function(e) {
             if (e.key === 'advertiserCampaigns') {
                 loadCampaigns();
+            }
+        });
+
+        function togglePublisherDropdown() {
+            const dropdown = document.getElementById('publisherDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('publisherDropdown');
+            const profile = document.querySelector('.user-profile');
+            if (dropdown && !profile.contains(e.target)) {
+                dropdown.classList.remove('active');
             }
         });
 
