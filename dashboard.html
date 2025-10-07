@@ -105,6 +105,44 @@
             margin-left: 4px;
         }
 
+        .view-toggle {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .toggle-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #8892b0;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+            color: white;
+        }
+
         .container {
             max-width: 1200px;
             margin: 60px auto;
@@ -363,6 +401,12 @@
                 padding: 8px;
             }
 
+            .view-toggle {
+                top: 70px;
+                right: 10px;
+                flex-direction: column;
+            }
+
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -391,6 +435,12 @@
         </div>
     </header>
 
+    <div class="view-toggle">
+        <a href="advertiser-dashboard.html" class="toggle-btn">Advertiser</a>
+        <a href="dashboard.html" class="toggle-btn active">Publisher</a>
+        <a href="site.html" class="toggle-btn">User View</a>
+    </div>
+
     <div class="container">
         <div class="dashboard-header">
             <h1>Available Bids</h1>
@@ -408,11 +458,11 @@
             </div>
             <div class="stat-card">
                 <div class="stat-label">Est. Daily Revenue</div>
-                <div class="stat-value">$85</div>
+                <div class="stat-value" id="revenueValue">$85</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Today's Verifications</div>
-                <div class="stat-value">1,247</div>
+                <div class="stat-value" id="verificationsValue">1,247</div>
             </div>
         </div>
 
@@ -576,6 +626,7 @@
         </div>
 
         <div style="text-align: center; margin-top: 50px;">
+            <p id="selectionText" style="display: none; color: #10b981; font-size: 16px; font-weight: 600; margin-bottom: 15px;"></p>
             <a href="site.html" class="demo-link" id="demoLink">
                 View Site Demo →
             </a>
@@ -587,6 +638,33 @@
 
     <script>
         let selectedBid = null;
+        let verificationsCount = 1247;
+        let revenue = 85;
+
+        // Simulate live activity - increment every 3-5 seconds
+        function updateLiveStats() {
+            const randomDelay = 3000 + Math.random() * 2000; // 3-5 seconds
+            setTimeout(() => {
+                verificationsCount++;
+                
+                // Calculate revenue based on selected bid or average
+                const selectedCaptcha = localStorage.getItem('selectedCaptcha');
+                const rates = {
+                    'burger': 0.08,
+                    'gaming': 0.07,
+                    'crypto': 0.06,
+                    'fitness': 0.05,
+                    'travel': 0.04
+                };
+                const rate = selectedCaptcha ? rates[selectedCaptcha] : 0.068; // average
+                revenue = (verificationsCount * rate).toFixed(0);
+                
+                document.getElementById('verificationsValue').textContent = verificationsCount.toLocaleString();
+                document.getElementById('revenueValue').textContent = '$' + revenue;
+                
+                updateLiveStats(); // Schedule next update
+            }, randomDelay);
+        }
 
         function selectBid(bidType) {
             // Remove previous selection
@@ -603,6 +681,17 @@
 
             // Activate demo link
             document.getElementById('demoLink').classList.add('active');
+            
+            // Show selection confirmation
+            const bidNames = {
+                'burger': 'BurgerBlast ($0.08/verification)',
+                'gaming': 'PixelArena ($0.07/verification)',
+                'crypto': 'CryptoX ($0.06/verification)',
+                'fitness': 'FitLife Pro ($0.05/verification)',
+                'travel': 'JetQuest ($0.04/verification)'
+            };
+            document.getElementById('selectionText').textContent = 'Selected: ' + bidNames[bidType];
+            document.getElementById('selectionText').style.display = 'block';
         }
 
         // Check if there's a stored selection
@@ -615,9 +704,22 @@
                         card.classList.add('selected');
                         selectedBid = stored;
                         document.getElementById('demoLink').classList.add('active');
+                        
+                        const bidNames = {
+                            'burger': 'BurgerBlast ($0.08/verification)',
+                            'gaming': 'PixelArena ($0.07/verification)',
+                            'crypto': 'CryptoX ($0.06/verification)',
+                            'fitness': 'FitLife Pro ($0.05/verification)',
+                            'travel': 'JetQuest ($0.04/verification)'
+                        };
+                        document.getElementById('selectionText').textContent = 'Selected: ' + bidNames[stored];
+                        document.getElementById('selectionText').style.display = 'block';
                     }
                 });
             }
+            
+            // Start live stats updates
+            updateLiveStats();
         });
     </script>
 </body>
