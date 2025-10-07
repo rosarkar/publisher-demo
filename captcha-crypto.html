@@ -71,6 +71,26 @@
             margin-bottom: 20px;
         }
 
+        .trading-insight {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            border-radius: 12px;
+            border: 2px solid #f59e0b;
+        }
+
+        .insight-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .insight-text {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+        }
+
         .pattern-display {
             display: flex;
             justify-content: center;
@@ -203,18 +223,20 @@
 
         <div class="success-message" id="successMessage">
             <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
-            <div style="font-size: 18px; font-weight: 700; color: #10b981;">Verified!</div>
+            <div style="font-size: 18px; font-weight: 700; color: #10b981;">Pattern Verified!</div>
             <div style="font-size: 14px; color: #666; margin-top: 5px;">Redirecting...</div>
         </div>
 
         <div id="gameContent">
-            <div class="game-title">Draw the pattern</div>
+            <div class="game-title">Master the trading pattern</div>
             <div class="instructions">Swipe in the direction shown below</div>
+
+            <div class="trading-insight" id="tradingInsight"></div>
 
             <div class="pattern-display" id="patternDisplay"></div>
 
             <div class="progress-display">
-                <div class="progress-text">Complete the swipe sequence</div>
+                <div class="progress-text">Complete the sequence</div>
                 <div class="swipe-indicators" id="swipeIndicators"></div>
             </div>
 
@@ -230,25 +252,54 @@
     </div>
 
     <script>
-        const patterns = [
+        // Trading insights for brand education
+        const insights = [
+            { icon: '📈', text: 'Buy low, sell high - Master the basics with CryptoX' },
+            { icon: '🔒', text: 'Bank-grade security - Your assets are protected' },
+            { icon: '⚡', text: 'Lightning-fast trades - Execute in milliseconds' },
+            { icon: '🌍', text: 'Trade globally - 200+ cryptocurrencies supported' }
+        ];
+
+        const selectedInsight = insights[Math.floor(Math.random() * insights.length)];
+        document.getElementById('tradingInsight').innerHTML = `
+            <div class="insight-icon">${selectedInsight.icon}</div>
+            <div class="insight-text">${selectedInsight.text}</div>
+        `;
+
+        // Randomize pattern length and directions
+        const allPatterns = [
+            ['→', '↓'],
+            ['↑', '→'],
+            ['←', '↑'],
             ['→', '↓', '←'],
             ['↑', '→', '↓'],
             ['←', '↑', '→'],
-            ['↓', '→', '↑']
+            ['↓', '→', '↑', '←']
         ];
 
-        const pattern = patterns[Math.floor(Math.random() * patterns.length)];
+        const pattern = allPatterns[Math.floor(Math.random() * allPatterns.length)];
         let currentStep = 0;
         let isDrawing = false;
         let startPos = null;
         let swipeData = [];
+        let audioContext = null;
 
-        const directionMap = {
+        const arrowMap = {
             '→': 'right',
             '←': 'left',
             '↑': 'up',
             '↓': 'down'
         };
+
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            }
+            return audioContext;
+        }
 
         function initGame() {
             const display = document.getElementById('patternDisplay');
@@ -276,163 +327,144 @@
         }
 
         function playSound(frequency) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = frequency;
-            oscillator.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.1);
-        }
-
-        function vibrate() {
-            if (navigator.vibrate) {
-                navigator.vibrate(15);
-            }
+            try {
+                const ctx = initAudioContext();
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.1);
+            } catch (e) {}
         }
 
         const swipeArea = document.getElementById('swipeArea');
 
-        swipeArea.addEventListener('touchstart', handleStart, { passive: false });
-        swipeArea.addEventListener('mousedown', handleStart);
+        swipeArea.addEventListener('mousedown', startSwipe);
+        swipeArea.addEventListener('mousemove', continueSwipe);
+        swipeArea.addEventListener('mouseup', endSwipe);
         
-        swipeArea.addEventListener('touchmove', handleMove, { passive: false });
-        swipeArea.addEventListener('mousemove', handleMove);
-        
-        swipeArea.addEventListener('touchend', handleEnd);
-        swipeArea.addEventListener('mouseup', handleEnd);
+        swipeArea.addEventListener('touchstart', startSwipe, { passive: false });
+        swipeArea.addEventListener('touchmove', continueSwipe, { passive: false });
+        swipeArea.addEventListener('touchend', endSwipe, { passive: false });
 
-        function handleStart(e) {
+        function startSwipe(e) {
             e.preventDefault();
             isDrawing = true;
-            const point = e.touches ? e.touches[0] : e;
-            startPos = {
-                x: point.clientX,
-                y: point.clientY,
-                time: Date.now()
-            };
+            const pos = getPosition(e);
+            startPos = { x: pos.x, y: pos.y, time: Date.now() };
+            swipeData = [startPos];
         }
 
-        function handleMove(e) {
-            if (!isDrawing || !startPos) return;
+        function continueSwipe(e) {
+            if (!isDrawing) return;
             e.preventDefault();
-            
-            const point = e.touches ? e.touches[0] : e;
-            const rect = swipeArea.getBoundingClientRect();
-            
-            const trail = document.createElement('div');
-            trail.className = 'swipe-trail';
-            trail.style.left = (point.clientX - rect.left) + 'px';
-            trail.style.top = (point.clientY - rect.top) + 'px';
-            trail.style.height = '20px';
-            swipeArea.appendChild(trail);
-            
-            setTimeout(() => trail.remove(), 500);
+            const pos = getPosition(e);
+            swipeData.push({ x: pos.x, y: pos.y, time: Date.now() });
         }
 
-        function handleEnd(e) {
-            if (!isDrawing || !startPos) return;
-            
-            const point = e.changedTouches ? e.changedTouches[0] : e;
-            const endPos = {
-                x: point.clientX,
-                y: point.clientY,
-                time: Date.now()
-            };
-            
+        function endSwipe(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            isDrawing = false;
+
+            if (swipeData.length < 2) return;
+
+            const endPos = swipeData[swipeData.length - 1];
             const dx = endPos.x - startPos.x;
             const dy = endPos.y - startPos.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+            const distance = Math.hypot(dx, dy);
             const duration = endPos.time - startPos.time;
-            
-            if (distance > 50) {
-                const direction = getSwipeDirection(dx, dy);
-                const velocity = distance / duration;
-                
-                swipeData.push({ direction, velocity, duration });
-                
-                checkSwipe(direction);
-            }
-            
-            isDrawing = false;
-            startPos = null;
-        }
+            const velocity = distance / duration;
 
-        function getSwipeDirection(dx, dy) {
-            const absDx = Math.abs(dx);
-            const absDy = Math.abs(dy);
-            
-            if (absDx > absDy) {
-                return dx > 0 ? 'right' : 'left';
+            if (distance < 30) return;
+
+            let direction;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                direction = dx > 0 ? 'right' : 'left';
             } else {
-                return dy > 0 ? 'down' : 'up';
+                direction = dy > 0 ? 'down' : 'up';
             }
-        }
 
-        function checkSwipe(direction) {
-            const expected = directionMap[pattern[currentStep]];
-            
-            if (direction === expected) {
+            const expectedDirection = arrowMap[pattern[currentStep]];
+            const hasNaturalVelocity = velocity > 0.1 && velocity < 5;
+
+            if (direction === expectedDirection && hasNaturalVelocity) {
                 playSound(600 + currentStep * 100);
-                vibrate();
-                
+                if (navigator.vibrate) {
+                    navigator.vibrate(30);
+                }
+
                 const dots = document.querySelectorAll('.swipe-dot');
                 dots[currentStep].classList.add('completed');
-                
+
                 currentStep++;
-                
-                if (currentStep < pattern.length) {
-                    updateInstruction();
-                } else {
+
+                if (currentStep >= pattern.length) {
                     completeGame();
+                } else {
+                    updateInstruction();
                 }
             } else {
-                playSound(200);
+                playSound(300);
                 if (navigator.vibrate) {
                     navigator.vibrate([50, 50, 50]);
                 }
-                resetGame();
             }
+
+            swipeData = [];
         }
 
-        function resetGame() {
-            currentStep = 0;
-            swipeData = [];
-            document.querySelectorAll('.swipe-dot').forEach(dot => {
-                dot.classList.remove('completed');
-            });
-            updateInstruction();
+        function getPosition(e) {
+            const rect = swipeArea.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
         }
 
         function completeGame() {
-            const avgVelocity = swipeData.reduce((sum, d) => sum + d.velocity, 0) / swipeData.length;
-            const totalDuration = swipeData.reduce((sum, d) => sum + d.duration, 0);
-            
-            const isHuman = avgVelocity > 0.3 && avgVelocity < 5 && totalDuration > 300;
-            
-            if (isHuman) {
-                playSound(800);
-                vibrate();
-                
-                setTimeout(() => {
-                    document.getElementById('gameContent').style.display = 'none';
-                    document.getElementById('successMessage').classList.add('show');
-                    
+            try {
+                const ctx = initAudioContext();
+                [700, 900, 1100].forEach((freq, i) => {
                     setTimeout(() => {
-                        window.parent.postMessage('captcha_success', '*');
-                    }, 1500);
-                }, 500);
-            } else {
-                resetGame();
+                        const oscillator = ctx.createOscillator();
+                        const gainNode = ctx.createGain();
+                        oscillator.connect(gainNode);
+                        gainNode.connect(ctx.destination);
+                        oscillator.frequency.value = freq;
+                        oscillator.type = 'sine';
+                        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                        oscillator.start(ctx.currentTime);
+                        oscillator.stop(ctx.currentTime + 0.2);
+                    }, i * 100);
+                });
+            } catch (e) {}
+
+            if (navigator.vibrate) {
+                navigator.vibrate([30, 50, 30, 50, 30]);
             }
+
+            setTimeout(() => {
+                document.getElementById('gameContent').style.display = 'none';
+                document.getElementById('successMessage').classList.add('show');
+
+                setTimeout(() => {
+                    window.parent.postMessage('captcha_success', '*');
+                }, 1500);
+            }, 500);
         }
 
         initGame();
