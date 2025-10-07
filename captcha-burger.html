@@ -56,8 +56,35 @@
             font-size: 20px;
             font-weight: 700;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             color: #333;
+        }
+
+        .instructions {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .brand-hint {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+            border-radius: 12px;
+            border: 2px solid #ff6b6b;
+        }
+
+        .hint-emoji {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .hint-text {
+            font-size: 13px;
+            color: #666;
+            font-weight: 600;
         }
 
         .game-board {
@@ -97,9 +124,21 @@
             animation: correctPulse 0.5s ease;
         }
 
+        .game-item.wrong {
+            border-color: #ef4444;
+            background: #fee2e2;
+            animation: wrongShake 0.5s ease;
+        }
+
         @keyframes correctPulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
         .verify-button {
@@ -126,13 +165,6 @@
             background: #ccc;
             cursor: not-allowed;
             transform: none;
-        }
-
-        .instructions {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 20px;
         }
 
         .success-message {
@@ -186,13 +218,18 @@
 
         <div class="success-message" id="successMessage">
             <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
-            <div style="font-size: 18px; font-weight: 700; color: #10b981;">Verified!</div>
+            <div style="font-size: 18px; font-weight: 700; color: #10b981;">Perfect! You know your burgers!</div>
             <div style="font-size: 14px; color: #666; margin-top: 5px;">Redirecting...</div>
         </div>
 
         <div id="gameContent">
-            <div class="game-title">Select all the burgers 🍔</div>
-            <div class="instructions">Click on each burger you see</div>
+            <div class="game-title">Find the BurgerBlast Signature!</div>
+            <div class="instructions">Select ONLY our signature flame-grilled burgers</div>
+
+            <div class="brand-hint">
+                <div class="hint-emoji">🍔</div>
+                <div class="hint-text">Look for the classic flame-grilled burger!</div>
+            </div>
 
             <div class="game-board" id="gameBoard"></div>
 
@@ -208,11 +245,55 @@
     </div>
 
     <script>
-        const items = ['🍔', '🍕', '🌭', '🍔', '🥗', '🍟', '🍔', '🥤', '🍔'];
-        const correctItems = [0, 3, 6, 8]; // Indices of burgers
+        // Define items - signature burger vs everything else
+        const signatureBurger = '🍔'; // The correct one
+        const decoyBurgers = ['🍕', '🌭', '🥗', '🍟', '🥤', '🌮', '🍗', '🥪'];
+        
+        let items = [];
+        let correctIndices = [];
         let selectedItems = [];
 
         function initGame() {
+            items = [];
+            correctIndices = [];
+            selectedItems = [];
+            
+            // Generate random number of signature burgers (2-4)
+            const numCorrect = Math.floor(Math.random() * 3) + 2;
+            
+            // Create array with correct burgers
+            for (let i = 0; i < numCorrect; i++) {
+                items.push(signatureBurger);
+                correctIndices.push(i);
+            }
+            
+            // Fill remaining slots with decoys (up to 9 total items)
+            const totalItems = 9;
+            const numDecoys = totalItems - numCorrect;
+            
+            for (let i = 0; i < numDecoys; i++) {
+                const randomDecoy = decoyBurgers[Math.floor(Math.random() * decoyBurgers.length)];
+                items.push(randomDecoy);
+            }
+            
+            // Shuffle the array
+            for (let i = items.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [items[i], items[j]] = [items[j], items[i]];
+            }
+            
+            // Update correct indices after shuffle
+            correctIndices = [];
+            items.forEach((item, index) => {
+                if (item === signatureBurger) {
+                    correctIndices.push(index);
+                }
+            });
+            
+            renderBoard();
+        }
+
+        function renderBoard() {
             const gameBoard = document.getElementById('gameBoard');
             gameBoard.innerHTML = '';
 
@@ -236,13 +317,13 @@
         }
 
         function verifySelection() {
-            const allCorrect = correctItems.every(i => selectedItems.includes(i));
-            const noExtra = selectedItems.every(i => correctItems.includes(i));
+            const allCorrect = correctIndices.every(i => selectedItems.includes(i));
+            const noExtra = selectedItems.every(i => correctIndices.includes(i));
 
-            if (allCorrect && noExtra) {
-                // Mark correct items
+            if (allCorrect && noExtra && selectedItems.length > 0) {
+                // Mark all items
                 document.querySelectorAll('.game-item').forEach((item, index) => {
-                    if (correctItems.includes(index)) {
+                    if (correctIndices.includes(index)) {
                         item.classList.add('correct');
                     }
                 });
@@ -258,14 +339,18 @@
                     }, 1500);
                 }, 500);
             } else {
-                // Wrong selection - shake animation
-                const container = document.querySelector('.captcha-container');
-                container.style.animation = 'shake 0.5s';
+                // Show what was wrong
+                document.querySelectorAll('.game-item').forEach((item, index) => {
+                    if (selectedItems.includes(index) && !correctIndices.includes(index)) {
+                        item.classList.add('wrong');
+                    }
+                });
+                
+                // Reset after animation
                 setTimeout(() => {
-                    container.style.animation = '';
                     selectedItems = [];
                     document.querySelectorAll('.game-item').forEach(item => {
-                        item.classList.remove('selected');
+                        item.classList.remove('selected', 'wrong');
                     });
                 }, 500);
             }
@@ -274,13 +359,5 @@
         // Initialize game on load
         initGame();
     </script>
-
-    <style>
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-    </style>
 </body>
 </html>
