@@ -388,6 +388,18 @@
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
 
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8892b0;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
         @media (max-width: 768px) {
             .user-details {
                 display: none;
@@ -450,15 +462,15 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Active Bids</div>
-                <div class="stat-value">5</div>
+                <div class="stat-value" id="activeBids">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Highest Bid</div>
-                <div class="stat-value">$0.08</div>
+                <div class="stat-value" id="highestBid">$0.00</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Est. Daily Revenue</div>
-                <div class="stat-value" id="revenueValue">$85</div>
+                <div class="stat-value" id="revenueValue">$0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Today's Verifications</div>
@@ -468,161 +480,8 @@
 
         <h2 class="section-title">💰 Current Bids</h2>
 
-        <div class="bids-grid">
-            <div class="bid-card" onclick="selectBid('burger')">
-                <div class="bid-header">
-                    <div class="advertiser-info">
-                        <div class="advertiser-logo">🍔</div>
-                        <div>
-                            <div class="advertiser-name">BurgerBlast</div>
-                            <div style="font-size: 12px; color: #8892b0;">Fast Food Chain</div>
-                        </div>
-                    </div>
-                    <div class="bid-amount">
-                        <div class="bid-label">Per Verification</div>
-                        <div class="bid-value">$0.08</div>
-                    </div>
-                </div>
-                <div class="bid-details">
-                    <div class="detail-row">
-                        <span class="detail-label">Campaign Type</span>
-                        <span class="detail-value">Brand Game</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Engagement Rate</span>
-                        <span class="detail-value badge badge-high">High</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Daily Budget</span>
-                        <span class="detail-value">$2,400</span>
-                    </div>
-                </div>
-                <button class="select-button">Select This Bid</button>
-            </div>
-
-            <div class="bid-card" onclick="selectBid('gaming')">
-                <div class="bid-header">
-                    <div class="advertiser-info">
-                        <div class="advertiser-logo">🎮</div>
-                        <div>
-                            <div class="advertiser-name">PixelArena</div>
-                            <div style="font-size: 12px; color: #8892b0;">Gaming Platform</div>
-                        </div>
-                    </div>
-                    <div class="bid-amount">
-                        <div class="bid-label">Per Verification</div>
-                        <div class="bid-value">$0.07</div>
-                    </div>
-                </div>
-                <div class="bid-details">
-                    <div class="detail-row">
-                        <span class="detail-label">Campaign Type</span>
-                        <span class="detail-value">Mini Game</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Engagement Rate</span>
-                        <span class="detail-value badge badge-high">High</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Daily Budget</span>
-                        <span class="detail-value">$2,100</span>
-                    </div>
-                </div>
-                <button class="select-button">Select This Bid</button>
-            </div>
-
-            <div class="bid-card" onclick="selectBid('crypto')">
-                <div class="bid-header">
-                    <div class="advertiser-info">
-                        <div class="advertiser-logo">₿</div>
-                        <div>
-                            <div class="advertiser-name">CryptoX</div>
-                            <div style="font-size: 12px; color: #8892b0;">Exchange Platform</div>
-                        </div>
-                    </div>
-                    <div class="bid-amount">
-                        <div class="bid-label">Per Verification</div>
-                        <div class="bid-value">$0.06</div>
-                    </div>
-                </div>
-                <div class="bid-details">
-                    <div class="detail-row">
-                        <span class="detail-label">Campaign Type</span>
-                        <span class="detail-value">Interactive Quiz</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Engagement Rate</span>
-                        <span class="detail-value badge badge-medium">Medium</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Daily Budget</span>
-                        <span class="detail-value">$1,800</span>
-                    </div>
-                </div>
-                <button class="select-button">Select This Bid</button>
-            </div>
-
-            <div class="bid-card" onclick="selectBid('fitness')">
-                <div class="bid-header">
-                    <div class="advertiser-info">
-                        <div class="advertiser-logo">💪</div>
-                        <div>
-                            <div class="advertiser-name">FitLife Pro</div>
-                            <div style="font-size: 12px; color: #8892b0;">Fitness App</div>
-                        </div>
-                    </div>
-                    <div class="bid-amount">
-                        <div class="bid-label">Per Verification</div>
-                        <div class="bid-value">$0.05</div>
-                    </div>
-                </div>
-                <div class="bid-details">
-                    <div class="detail-row">
-                        <span class="detail-label">Campaign Type</span>
-                        <span class="detail-value">Challenge Game</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Engagement Rate</span>
-                        <span class="detail-value badge badge-medium">Medium</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Daily Budget</span>
-                        <span class="detail-value">$1,500</span>
-                    </div>
-                </div>
-                <button class="select-button">Select This Bid</button>
-            </div>
-
-            <div class="bid-card" onclick="selectBid('travel')">
-                <div class="bid-header">
-                    <div class="advertiser-info">
-                        <div class="advertiser-logo">✈️</div>
-                        <div>
-                            <div class="advertiser-name">JetQuest</div>
-                            <div style="font-size: 12px; color: #8892b0;">Travel Agency</div>
-                        </div>
-                    </div>
-                    <div class="bid-amount">
-                        <div class="bid-label">Per Verification</div>
-                        <div class="bid-value">$0.04</div>
-                    </div>
-                </div>
-                <div class="bid-details">
-                    <div class="detail-row">
-                        <span class="detail-label">Campaign Type</span>
-                        <span class="detail-value">Destination Match</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Engagement Rate</span>
-                        <span class="detail-value badge badge-new">New</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Daily Budget</span>
-                        <span class="detail-value">$1,200</span>
-                    </div>
-                </div>
-                <button class="select-button">Select This Bid</button>
-            </div>
+        <div class="bids-grid" id="bidsGrid">
+            <!-- Bids will be dynamically loaded here -->
         </div>
 
         <div style="text-align: center; margin-top: 50px;">
@@ -639,41 +498,157 @@
     <script>
         let selectedBid = null;
         let verificationsCount = 1247;
-        let revenue = 85;
+        let revenue = 0;
 
-        // Simulate live activity - increment every 3-5 seconds
-        function updateLiveStats() {
-            const randomDelay = 3000 + Math.random() * 2000; // 3-5 seconds
-            setTimeout(() => {
-                verificationsCount++;
-                
-                // Calculate revenue based on selected bid or average
-                const selectedCaptcha = localStorage.getItem('selectedCaptcha');
-                const rates = {
-                    'burger': 0.08,
-                    'gaming': 0.07,
-                    'crypto': 0.06,
-                    'fitness': 0.05,
-                    'travel': 0.04
-                };
-                const rate = selectedCaptcha ? rates[selectedCaptcha] : 0.068; // average
-                revenue = (verificationsCount * rate).toFixed(0);
-                
-                document.getElementById('verificationsValue').textContent = verificationsCount.toLocaleString();
-                document.getElementById('revenueValue').textContent = '$' + revenue;
-                
-                updateLiveStats(); // Schedule next update
-            }, randomDelay);
+        // CAPTCHA type metadata
+        const captchaMetadata = {
+            'burger': { 
+                icon: '🍔', 
+                name: 'BurgerBlast',
+                type: 'Brand Game',
+                defaultCategory: 'Food & Beverage'
+            },
+            'gaming': { 
+                icon: '🎮', 
+                name: 'PixelArena',
+                type: 'Mini Game',
+                defaultCategory: 'Gaming Platform'
+            },
+            'crypto': { 
+                icon: '₿', 
+                name: 'CryptoX',
+                type: 'Interactive Quiz',
+                defaultCategory: 'Cryptocurrency'
+            },
+            'fitness': { 
+                icon: '💪', 
+                name: 'FitLife Pro',
+                type: 'Challenge Game',
+                defaultCategory: 'Health & Fitness'
+            },
+            'travel': { 
+                icon: '✈️', 
+                name: 'JetQuest',
+                type: 'Destination Match',
+                defaultCategory: 'Travel Agency'
+            }
+        };
+
+        function loadCampaigns() {
+            const campaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
+            
+            if (campaigns.length === 0) {
+                renderEmptyState();
+                updateStats(campaigns);
+                return;
+            }
+
+            renderBids(campaigns);
+            updateStats(campaigns);
         }
 
-        function selectBid(bidType) {
+        function renderEmptyState() {
+            const grid = document.getElementById('bidsGrid');
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📢</div>
+                    <h3>No advertiser bids available</h3>
+                    <p style="margin-top: 10px;">Waiting for advertisers to create campaigns...</p>
+                </div>
+            `;
+        }
+
+        function renderBids(campaigns) {
+            const grid = document.getElementById('bidsGrid');
+            
+            grid.innerHTML = campaigns.map((campaign, index) => {
+                const metadata = captchaMetadata[campaign.captchaType];
+                const cpmPerVerification = (campaign.cpmBid / 1000).toFixed(2);
+                
+                // Determine engagement rate badge
+                const successRate = campaign.successRate || 0;
+                let engagementBadge = 'badge-medium';
+                let engagementText = 'Medium';
+                if (successRate > 85) {
+                    engagementBadge = 'badge-high';
+                    engagementText = 'High';
+                } else if (successRate < 70) {
+                    engagementBadge = 'badge-new';
+                    engagementText = 'New';
+                }
+                
+                return `
+                    <div class="bid-card" onclick="selectBid('${campaign.captchaType}', ${index})" data-campaign-id="${index}">
+                        <div class="bid-header">
+                            <div class="advertiser-info">
+                                <div class="advertiser-logo">${metadata.icon}</div>
+                                <div>
+                                    <div class="advertiser-name">${campaign.brandName}</div>
+                                    <div style="font-size: 12px; color: #8892b0;">${metadata.defaultCategory}</div>
+                                </div>
+                            </div>
+                            <div class="bid-amount">
+                                <div class="bid-label">Per Verification</div>
+                                <div class="bid-value">$${cpmPerVerification}</div>
+                            </div>
+                        </div>
+                        <div class="bid-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Campaign Type</span>
+                                <span class="detail-value">${metadata.type}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Engagement Rate</span>
+                                <span class="detail-value badge ${engagementBadge}">${engagementText}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Daily Budget</span>
+                                <span class="detail-value">$${campaign.dailyBudget.toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <button class="select-button">Select This Bid</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateStats(campaigns) {
+            // Active bids count
+            document.getElementById('activeBids').textContent = campaigns.length;
+            
+            // Highest bid
+            if (campaigns.length > 0) {
+                const highestCPM = Math.max(...campaigns.map(c => c.cpmBid / 1000));
+                document.getElementById('highestBid').textContent = '$' + highestCPM.toFixed(2);
+            } else {
+                document.getElementById('highestBid').textContent = '$0.00';
+            }
+            
+            // Calculate revenue based on selected campaign
+            const selectedCaptcha = localStorage.getItem('selectedCaptcha');
+            if (selectedCaptcha && campaigns.length > 0) {
+                const selectedCampaign = campaigns.find(c => c.captchaType === selectedCaptcha);
+                if (selectedCampaign) {
+                    const rate = selectedCampaign.cpmBid / 1000;
+                    revenue = (verificationsCount * rate).toFixed(0);
+                }
+            }
+            document.getElementById('revenueValue').textContent = '$' + revenue;
+            document.getElementById('verificationsValue').textContent = verificationsCount.toLocaleString();
+        }
+
+        function selectBid(bidType, campaignIndex) {
             // Remove previous selection
             document.querySelectorAll('.bid-card').forEach(card => {
                 card.classList.remove('selected');
             });
 
             // Add selection to clicked card
-            event.currentTarget.classList.add('selected');
+            const clickedCard = document.querySelector(`[data-campaign-id="${campaignIndex}"]`);
+            if (clickedCard) {
+                clickedCard.classList.add('selected');
+            }
+            
             selectedBid = bidType;
 
             // Store selection in localStorage
@@ -683,39 +658,64 @@
             document.getElementById('demoLink').classList.add('active');
             
             // Show selection confirmation
-            const bidNames = {
-                'burger': 'BurgerBlast ($0.08/verification)',
-                'gaming': 'PixelArena ($0.07/verification)',
-                'crypto': 'CryptoX ($0.06/verification)',
-                'fitness': 'FitLife Pro ($0.05/verification)',
-                'travel': 'JetQuest ($0.04/verification)'
-            };
-            document.getElementById('selectionText').textContent = 'Selected: ' + bidNames[bidType];
+            const campaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
+            const campaign = campaigns[campaignIndex];
+            const cpmPerVerification = (campaign.cpmBid / 1000).toFixed(2);
+            
+            document.getElementById('selectionText').textContent = 
+                `Selected: ${campaign.brandName} ($${cpmPerVerification}/verification)`;
             document.getElementById('selectionText').style.display = 'block';
         }
 
-        // Check if there's a stored selection
+        // Simulate live activity - increment every 3-5 seconds
+        function updateLiveStats() {
+            const randomDelay = 3000 + Math.random() * 2000; // 3-5 seconds
+            setTimeout(() => {
+                verificationsCount++;
+                
+                // Calculate revenue based on selected bid
+                const selectedCaptcha = localStorage.getItem('selectedCaptcha');
+                const campaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
+                
+                if (selectedCaptcha && campaigns.length > 0) {
+                    const selectedCampaign = campaigns.find(c => c.captchaType === selectedCaptcha);
+                    if (selectedCampaign) {
+                        const rate = selectedCampaign.cpmBid / 1000;
+                        revenue = (verificationsCount * rate).toFixed(0);
+                    }
+                }
+                
+                document.getElementById('verificationsValue').textContent = verificationsCount.toLocaleString();
+                document.getElementById('revenueValue').textContent = '$' + revenue;
+                
+                updateLiveStats(); // Schedule next update
+            }, randomDelay);
+        }
+
+        // Check if there's a stored selection on page load
         window.addEventListener('load', () => {
+            loadCampaigns();
+            
             const stored = localStorage.getItem('selectedCaptcha');
             if (stored) {
-                const cards = document.querySelectorAll('.bid-card');
-                cards.forEach(card => {
-                    if (card.getAttribute('onclick').includes(stored)) {
+                const campaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
+                const campaignIndex = campaigns.findIndex(c => c.captchaType === stored);
+                
+                if (campaignIndex !== -1) {
+                    const card = document.querySelector(`[data-campaign-id="${campaignIndex}"]`);
+                    if (card) {
                         card.classList.add('selected');
-                        selectedBid = stored;
-                        document.getElementById('demoLink').classList.add('active');
-                        
-                        const bidNames = {
-                            'burger': 'BurgerBlast ($0.08/verification)',
-                            'gaming': 'PixelArena ($0.07/verification)',
-                            'crypto': 'CryptoX ($0.06/verification)',
-                            'fitness': 'FitLife Pro ($0.05/verification)',
-                            'travel': 'JetQuest ($0.04/verification)'
-                        };
-                        document.getElementById('selectionText').textContent = 'Selected: ' + bidNames[stored];
-                        document.getElementById('selectionText').style.display = 'block';
                     }
-                });
+                    
+                    selectedBid = stored;
+                    document.getElementById('demoLink').classList.add('active');
+                    
+                    const campaign = campaigns[campaignIndex];
+                    const cpmPerVerification = (campaign.cpmBid / 1000).toFixed(2);
+                    document.getElementById('selectionText').textContent = 
+                        `Selected: ${campaign.brandName} ($${cpmPerVerification}/verification)`;
+                    document.getElementById('selectionText').style.display = 'block';
+                }
             }
             
             // Start live stats updates
