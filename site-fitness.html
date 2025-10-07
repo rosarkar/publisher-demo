@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife Journal - Health & Fitness Coverage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            opacity: 0.08;
+        }
+
+        .header {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #8892b0;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .locked-content {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .lock-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(124, 58, 237, 0.2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(37, 99, 235, 0); }
+        }
+
+        .locked-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .locked-subtitle {
+            font-size: 18px;
+            color: #8892b0;
+            margin-bottom: 40px;
+        }
+
+        .unlock-button {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 18px 48px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .unlock-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.4);
+        }
+
+        .captcha-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .captcha-modal.active {
+            display: flex;
+        }
+
+        .captcha-wrapper {
+            max-width: 420px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .close-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .unlocked-content {
+            display: none;
+        }
+
+        .unlocked-content.active {
+            display: block;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(37, 99, 235, 0.3);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2);
+        }
+
+        .content-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(124, 58, 237, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .content-body {
+            padding: 24px;
+        }
+
+        .content-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+
+        .content-text {
+            color: #8892b0;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .content-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .meta-tag {
+            background: rgba(37, 99, 235, 0.2);
+            color: #3b82f6;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .meta-date {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .back-link {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #8892b0;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .view-toggle {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            gap: 8px;
+            z-index: 1001;
+        }
+
+        .toggle-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #8892b0;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: rgba(37, 99, 235, 0.3);
+            color: white;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            border-color: transparent;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .back-link {
+                position: static;
+                display: inline-block;
+                margin-bottom: 20px;
+            }
+
+            .view-toggle {
+                top: 70px;
+                right: 10px;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+
+    <a href="dashboard-fitness.html" class="back-link">← Back to Dashboard</a>
+
+    <div class="view-toggle">
+        <a href="advertiser-dashboard.html" class="toggle-btn">Advertiser</a>
+        <a href="dashboard-fitness.html" class="toggle-btn">Publisher</a>
+        <a href="site-fitness.html" class="toggle-btn active">User View</a>
+    </div>
+
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">FitLife Journal</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#">Workouts</a></li>
+                    <li><a href="#">Nutrition</a></li>
+                    <li><a href="#">Wellness</a></li>
+                    <li><a href="#">Gear</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="locked-content" id="lockedContent">
+            <div class="lock-icon">🔒</div>
+            <h1 class="locked-title">Premium Fitness Content</h1>
+            <p class="locked-subtitle">
+                Quick verification required to access expert workout guides and nutrition plans.
+            </p>
+            <button class="unlock-button" onclick="showCaptcha()">
+                Continue to Content
+            </button>
+            <p style="color: #666; font-size: 13px; margin-top: 20px;">
+                Verify you're human to access FitLife Journal
+            </p>
+        </div>
+
+        <div class="unlocked-content" id="unlockedContent">
+            <h2 style="font-size: 32px; margin-bottom: 20px;">Latest Articles</h2>
+            <p style="color: #8892b0; margin-bottom: 40px;">
+                Expert guides, workouts, and nutrition advice.
+            </p>
+
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="content-image">💪</div>
+                    <div class="content-body">
+                        <h3 class="content-title">5x5 Strength Training Guide</h3>
+                        <p class="content-text">
+                            Master the fundamentals of compound lifts with our comprehensive 5x5 program. Build strength efficiently with proven progressive overload...
+                        </p>
+                        <div class="content-meta">
+                            <span class="meta-tag">Strength</span>
+                            <span class="meta-date">2 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="content-image">🥗</div>
+                    <div class="content-body">
+                        <h3 class="content-title">High-Protein Meal Prep</h3>
+                        <p class="content-text">
+                            7-day meal plan with 150g+ protein per day. Easy recipes, shopping lists, and macro breakdowns for muscle building and recovery...
+                        </p>
+                        <div class="content-meta">
+                            <span class="meta-tag">Nutrition</span>
+                            <span class="meta-date">5 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="content-image">🏃</div>
+                    <div class="content-body">
+                        <h3 class="content-title">Marathon Training Plan</h3>
+                        <p class="content-text">
+                            16-week program for first-time marathoners. Weekly mileage progression, recovery strategies, and race day preparation...
+                        </p>
+                        <div class="content-meta">
+                            <span class="meta-tag">Running</span>
+                            <span class="meta-date">1 day ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="content-image">🧘</div>
+                    <div class="content-body">
+                        <h3 class="content-title">Mobility & Recovery</h3>
+                        <p class="content-text">
+                            Essential stretching routines for athletes. Improve flexibility, prevent injury, and enhance performance with targeted mobility work...
+                        </p>
+                        <div class="content-meta">
+                            <span class="meta-tag">Recovery</span>
+                            <span class="meta-date">3 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="content-image">⚡</div>
+                    <div class="content-body">
+                        <h3 class="content-title">HIIT Workout Science</h3>
+                        <p class="content-text">
+                            Evidence-based approach to high-intensity training. Maximize fat loss and cardiovascular fitness in minimal time...
+                        </p>
+                        <div class="content-meta">
+                            <span class="meta-tag">Cardio</span>
+                            <span class="meta-date">6 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="content-image">💊</div>
+                    <div class="content-body">
+                        <h3 class="content-title">Supplement Guide 2025</h3>
+                        <p class="content-text">
+                            Science-backed supplementation strategies. What works, what doesn't, and optimal dosing protocols for performance and health...
+                        </p>
+                        <div class="content-meta">
+                            <span class="meta-tag">Supplements</span>
+                            <span class="meta-date">8 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="captcha-modal" id="captchaModal">
+        <button class="close-button" onclick="closeCaptcha()">✕</button>
+        <div class="captcha-wrapper" id="captchaWrapper"></div>
+    </div>
+
+    <script>
+        function showCaptcha() {
+            const modal = document.getElementById('captchaModal');
+            const wrapper = document.getElementById('captchaWrapper');
+            
+            // Get selected CAPTCHA from fitness publisher (stored with 'fitness' prefix)
+            const selectedCaptcha = localStorage.getItem('selectedCaptcha_fitness') || 'fitness';
+            
+            // Map advertiser to CAPTCHA file
+            const captchaFiles = {
+                'burger': 'captcha-burger.html',
+                'gaming': 'captcha-gaming.html',
+                'crypto': 'captcha-crypto.html',
+                'fitness': 'captcha-fitness.html',
+                'travel': 'captcha-travel.html'
+            };
+            
+            // Create iframe
+            const iframe = document.createElement('iframe');
+            iframe.style.width = '100%';
+            iframe.style.height = '90vh';
+            iframe.style.maxHeight = '750px';
+            iframe.style.border = 'none';
+            iframe.style.borderRadius = '24px';
+            iframe.src = captchaFiles[selectedCaptcha];
+            
+            wrapper.innerHTML = '';
+            wrapper.appendChild(iframe);
+            modal.classList.add('active');
+            
+            // Listen for success message
+            window.addEventListener('message', function handler(e) {
+                if (e.data === 'captcha_success') {
+                    // Track completion in localStorage
+                    trackCompletion(selectedCaptcha);
+                    unlockContent();
+                    closeCaptcha();
+                    window.removeEventListener('message', handler);
+                }
+            });
+        }
+
+        function trackCompletion(captchaType) {
+            // Get all campaigns
+            const campaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
+            
+            // Find the campaign that matches the completed CAPTCHA
+            const campaignIndex = campaigns.findIndex(c => c.captchaType === captchaType && c.status === 'active');
+            
+            if (campaignIndex !== -1) {
+                const campaign = campaigns[campaignIndex];
+                
+                // Increment completions
+                campaign.completions = (campaign.completions || 0) + 1;
+                
+                // Calculate actual spend (CPM / 1000)
+                const costPerCompletion = campaign.cpmBid / 1000;
+                campaign.actualSpend = (campaign.actualSpend || 0) + costPerCompletion;
+                
+                // Check if daily budget is reached
+                if (campaign.actualSpend >= campaign.dailyBudget) {
+                    campaign.status = 'budget_reached';
+                }
+                
+                // Save back to localStorage
+                localStorage.setItem('advertiserCampaigns', JSON.stringify(campaigns));
+                
+                console.log('✅ Completion tracked:', {
+                    campaign: campaign.brandName,
+                    completions: campaign.completions,
+                    spend: campaign.actualSpend,
+                    status: campaign.status
+                });
+            }
+        }
+
+        function closeCaptcha() {
+            const modal = document.getElementById('captchaModal');
+            modal.classList.remove('active');
+            setTimeout(() => {
+                document.getElementById('captchaWrapper').innerHTML = '';
+            }, 300);
+        }
+
+        function unlockContent() {
+            document.getElementById('lockedContent').style.display = 'none';
+            document.getElementById('unlockedContent').classList.add('active');
+        }
+
+        // Check for debug parameter to skip CAPTCHA
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('skip') === 'true') {
+            unlockContent();
+        }
+    </script>
+</body>
+</html>
