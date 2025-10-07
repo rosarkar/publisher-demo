@@ -133,14 +133,21 @@
             font-size: 24px;
             pointer-events: none;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 10;
         }
 
         .start-point {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
         .end-point {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
         .progress-display {
@@ -247,8 +254,8 @@
 
             <div class="canvas-container">
                 <canvas id="drawCanvas"></canvas>
-                <div class="endpoint start-point" id="startPoint">🛫</div>
-                <div class="endpoint end-point" id="endPoint">🛬</div>
+                <div class="endpoint start-point">🛫</div>
+                <div class="endpoint end-point">🛬</div>
             </div>
 
             <div class="hint-text">Drag from departure to arrival city</div>
@@ -291,36 +298,28 @@
         const canvas = document.getElementById('drawCanvas');
         const ctx = canvas.getContext('2d');
         
-        // Set canvas size
+        let isDrawing = false;
+        let pathPoints = [];
+        let startPoint = { x: 45, y: 150 };
+        let endPoint = { x: 0, y: 150 };
+
+        // Set canvas size after DOM loads
         function resizeCanvas() {
             const container = canvas.parentElement;
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
             
-            // Randomize start and end positions
-            const margin = 60;
-            const startX = margin + Math.random() * 40;
-            const startY = margin + Math.random() * (canvas.height - 2 * margin);
-            const endX = canvas.width - margin - Math.random() * 40;
-            const endY = margin + Math.random() * (canvas.height - 2 * margin);
-            
-            startPoint = { x: startX, y: startY };
-            endPoint = { x: endX, y: endY };
-            
-            // Position endpoint elements
-            const startEl = document.getElementById('startPoint');
-            const endEl = document.getElementById('endPoint');
-            startEl.style.left = (startX - 25) + 'px';
-            startEl.style.top = (startY - 25) + 'px';
-            endEl.style.left = (endX - 25) + 'px';
-            endEl.style.top = (endY - 25) + 'px';
+            // Simple fixed positions that work on mobile
+            startPoint = { x: 45, y: canvas.height / 2 };
+            endPoint = { x: canvas.width - 45, y: canvas.height / 2 };
         }
+        
+        // Wait for everything to load
+        window.addEventListener('load', () => {
+            resizeCanvas();
+        });
+        
         resizeCanvas();
-
-        let isDrawing = false;
-        let pathPoints = [];
-        let startPoint = { x: 40, y: canvas.height / 2 };
-        let endPoint = { x: canvas.width - 40, y: canvas.height / 2 };
 
         function playSound(frequency, duration = 0.1) {
             try {
@@ -362,9 +361,9 @@
             e.preventDefault();
             const point = getPoint(e);
             
-            // Check if starting near start point - MUCH more lenient
+            // Very lenient start check
             const distToStart = Math.hypot(point.x - startPoint.x, point.y - startPoint.y);
-            if (distToStart < 80) { // Increased from 50
+            if (distToStart < 100) {
                 isDrawing = true;
                 pathPoints = [point];
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -394,13 +393,13 @@
                 ctx.stroke();
             }
             
-            // Update progress based on distance to end
+            // Update progress
             const distToEnd = Math.hypot(point.x - endPoint.x, point.y - endPoint.y);
             const totalDist = Math.hypot(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
             const progress = Math.min(100, Math.max(0, 100 - (distToEnd / totalDist * 100)));
             document.getElementById('progressFill').style.width = progress + '%';
             
-            // Play subtle sound periodically
+            // Play sound
             if (pathPoints.length % 5 === 0) {
                 playSound(700 + progress * 3, 0.05);
                 vibrate(5);
@@ -414,8 +413,8 @@
             const point = getPoint(e);
             const distToEnd = Math.hypot(point.x - endPoint.x, point.y - endPoint.y);
             
-            // MUCH more lenient completion check
-            if (distToEnd < 80 && pathPoints.length > 10) { // Reduced from 80/15
+            // Very lenient completion - just need to get close with any path
+            if (distToEnd < 100 && pathPoints.length > 5) {
                 completeGame();
             } else {
                 // Failed - reset
