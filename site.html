@@ -513,11 +513,47 @@
             // Listen for success message
             window.addEventListener('message', function handler(e) {
                 if (e.data === 'captcha_success') {
+                    // Track completion in localStorage
+                    trackCompletion(selectedCaptcha);
                     unlockContent();
                     closeCaptcha();
                     window.removeEventListener('message', handler);
                 }
             });
+        }
+
+        function trackCompletion(captchaType) {
+            // Get all campaigns
+            const campaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
+            
+            // Find the campaign that matches the completed CAPTCHA
+            const campaignIndex = campaigns.findIndex(c => c.captchaType === captchaType && c.status === 'active');
+            
+            if (campaignIndex !== -1) {
+                const campaign = campaigns[campaignIndex];
+                
+                // Increment completions
+                campaign.completions = (campaign.completions || 0) + 1;
+                
+                // Calculate actual spend (CPM / 1000)
+                const costPerCompletion = campaign.cpmBid / 1000;
+                campaign.actualSpend = (campaign.actualSpend || 0) + costPerCompletion;
+                
+                // Check if daily budget is reached
+                if (campaign.actualSpend >= campaign.dailyBudget) {
+                    campaign.status = 'budget_reached';
+                }
+                
+                // Save back to localStorage
+                localStorage.setItem('advertiserCampaigns', JSON.stringify(campaigns));
+                
+                console.log('✅ Completion tracked:', {
+                    campaign: campaign.brandName,
+                    completions: campaign.completions,
+                    spend: campaign.actualSpend,
+                    status: campaign.status
+                });
+            }
         }
 
         function closeCaptcha() {
