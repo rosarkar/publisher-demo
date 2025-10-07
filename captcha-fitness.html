@@ -9,7 +9,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -20,7 +19,6 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            touch-action: manipulation;
         }
 
         .captcha-container {
@@ -71,57 +69,87 @@
             margin-bottom: 20px;
         }
 
+        .workout-badge {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-radius: 12px;
+            border: 2px solid #10b981;
+        }
+
+        .workout-type {
+            font-size: 18px;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 5px;
+        }
+
+        .workout-bpm {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .fitness-tip {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f0fdf4;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+        }
+
         .rhythm-display {
             text-align: center;
             margin-bottom: 20px;
         }
 
-        .bpm-display {
-            font-size: 48px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-        }
-
-        .bpm-label {
+        .beat-count {
             font-size: 14px;
             color: #666;
+            margin-bottom: 10px;
         }
 
-        .tap-zone {
+        .beat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .tap-area {
             position: relative;
             width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            height: 250px;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
             border-radius: 16px;
             margin-bottom: 20px;
+            overflow: hidden;
+            border: 3px solid #e5e7eb;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            border: 3px solid #10b981;
-            overflow: hidden;
         }
 
         .tap-button {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 48px;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+            transition: all 0.1s ease;
             user-select: none;
         }
 
         .tap-button:active {
             transform: scale(0.9);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
 
         .beat-indicator {
@@ -129,63 +157,20 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 60px;
-            height: 60px;
-            background: rgba(16, 185, 129, 0.3);
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            animation: beatPulse 0.5s ease-out;
+            background: #10b981;
+            opacity: 0;
+        }
+
+        .beat-indicator.pulse {
+            animation: beatPulse 0.3s ease;
         }
 
         @keyframes beatPulse {
-            0% { transform: translateX(-50%) scale(0); opacity: 1; }
-            100% { transform: translateX(-50%) scale(1.5); opacity: 0; }
-        }
-
-        .progress-bars {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .progress-bar {
-            height: 30px;
-            background: #e5e7eb;
-            border-radius: 4px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-bar.good {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
-
-        .progress-bar.perfect {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            animation: shimmer 0.5s ease;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .timing-feedback {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            font-weight: 800;
-            color: white;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            pointer-events: none;
-            animation: feedbackFloat 0.5s ease;
-        }
-
-        @keyframes feedbackFloat {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -80%) scale(1.3); }
+            0% { opacity: 1; transform: translateX(-50%) scale(1); }
+            100% { opacity: 0; transform: translateX(-50%) scale(2); }
         }
 
         .success-message {
@@ -235,215 +220,189 @@
         <div class="brand-header">
             <div class="brand-logo">💪</div>
             <div class="brand-name">FitLife Pro</div>
-            <div class="brand-tagline">Your Fitness Journey Starts Here</div>
+            <div class="brand-tagline">Transform Your Body</div>
         </div>
 
         <div class="success-message" id="successMessage">
-            <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
-            <div style="font-size: 18px; font-weight: 700; color: #10b981;">Perfect Rhythm!</div>
+            <div style="font-size: 40px; margin-bottom: 10px;">🏆</div>
+            <div style="font-size: 18px; font-weight: 700; color: #10b981;">Workout Complete!</div>
             <div style="font-size: 14px; color: #666; margin-top: 5px;">Redirecting...</div>
         </div>
 
         <div id="gameContent">
-            <div class="game-title">Match the rhythm!</div>
-            <div class="instructions">Tap to the beat - 8 perfect hits to verify</div>
+            <div class="game-title">Match the workout rhythm</div>
+            <div class="instructions">Tap in sync with the beat</div>
+
+            <div class="workout-badge" id="workoutBadge"></div>
+
+            <div class="fitness-tip" id="fitnessTip"></div>
 
             <div class="rhythm-display">
-                <div class="bpm-display" id="bpmDisplay">120</div>
-                <div class="bpm-label">BPM</div>
+                <div class="beat-count">Perfect Beats</div>
+                <div class="beat-value"><span id="score">0</span> / <span id="target">8</span></div>
             </div>
 
-            <div class="progress-bars" id="progressBars"></div>
-
-            <div class="tap-zone" id="tapZone">
-                <div class="tap-button" id="tapButton">👊</div>
+            <div class="tap-area" id="tapArea">
+                <div class="beat-indicator" id="beatIndicator"></div>
+                <div class="tap-button">💪</div>
             </div>
 
             <div class="promo-banner">
-                <div class="promo-text">7-day free trial. Get started:</div>
-                <div class="promo-code">FIT30</div>
+                <div class="promo-text">Join FitLife Pro and get:</div>
+                <div class="promo-code">30 DAYS FREE</div>
             </div>
         </div>
     </div>
 
     <script>
-        const BPM = 120;
-        const BEAT_INTERVAL = 60000 / BPM; // milliseconds
-        const PERFECT_WINDOW = 150; // ms tolerance for perfect hit
-        const GOOD_WINDOW = 300; // ms tolerance for good hit
-        
-        let beatCount = 0;
+        // Workout types with different BPMs
+        const workouts = [
+            { name: '🔥 HIIT Workout', bpm: 140, icon: '🔥', tip: 'High-intensity intervals burn more calories in less time' },
+            { name: '🏃 Cardio Blast', bpm: 120, icon: '🏃', tip: 'Regular cardio strengthens your heart and lungs' },
+            { name: '⚡ Power Training', bpm: 100, icon: '⚡', tip: 'Strength training boosts metabolism even at rest' },
+            { name: '🎯 Endurance Mode', bpm: 110, icon: '🎯', tip: 'Build stamina with consistent moderate-intensity exercise' }
+        ];
+
+        const selectedWorkout = workouts[Math.floor(Math.random() * workouts.length)];
+        const bpm = selectedWorkout.bpm;
+        const beatInterval = 60000 / bpm;
+        const targetBeats = Math.floor(Math.random() * 3) + 6; // 6-8 beats
+
+        document.getElementById('workoutBadge').innerHTML = `
+            <div class="workout-type">${selectedWorkout.name}</div>
+            <div class="workout-bpm">${bpm} BPM</div>
+        `;
+
+        document.getElementById('fitnessTip').textContent = `💡 ${selectedWorkout.tip}`;
+        document.getElementById('target').textContent = targetBeats;
+
+        let score = 0;
         let lastBeatTime = 0;
-        let tapTimes = [];
-        let gameStarted = false;
-        let metronomeInterval;
+        let beatTimings = [];
+        let beatIntervalId = null;
+        let audioContext = null;
 
-        function initGame() {
-            const progressBars = document.getElementById('progressBars');
-            for (let i = 0; i < 8; i++) {
-                const bar = document.createElement('div');
-                bar.className = 'progress-bar';
-                progressBars.appendChild(bar);
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
             }
-
-            startMetronome();
+            return audioContext;
         }
 
-        function startMetronome() {
+        function playBeat() {
+            try {
+                const ctx = initAudioContext();
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.1);
+            } catch (e) {}
+
+            document.getElementById('beatIndicator').classList.add('pulse');
+            setTimeout(() => {
+                document.getElementById('beatIndicator').classList.remove('pulse');
+            }, 300);
+
             lastBeatTime = Date.now();
-            metronomeInterval = setInterval(() => {
-                showBeatIndicator();
-                playMetronomeSound();
-                lastBeatTime = Date.now();
-            }, BEAT_INTERVAL);
         }
 
-        function showBeatIndicator() {
-            const indicator = document.createElement('div');
-            indicator.className = 'beat-indicator';
-            document.getElementById('tapZone').appendChild(indicator);
-            setTimeout(() => indicator.remove(), 500);
-        }
+        // Start beat rhythm
+        beatIntervalId = setInterval(playBeat, beatInterval);
+        setTimeout(playBeat, 500);
 
-        function playMetronomeSound() {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = 800;
-            oscillator.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.05);
-        }
-
-        function playTapSound(isPerfect) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = isPerfect ? 1200 : 900;
-            oscillator.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.1);
-        }
-
-        function vibrate(pattern) {
-            if (navigator.vibrate) {
-                navigator.vibrate(pattern);
-            }
-        }
-
-        const tapButton = document.getElementById('tapButton');
-        tapButton.addEventListener('click', handleTap);
-        tapButton.addEventListener('touchstart', (e) => {
+        document.getElementById('tapArea').addEventListener('click', handleTap);
+        document.getElementById('tapArea').addEventListener('touchend', (e) => {
             e.preventDefault();
             handleTap();
-        }, { passive: false });
+        });
 
         function handleTap() {
             const tapTime = Date.now();
             const timeSinceLastBeat = tapTime - lastBeatTime;
-            
-            // Calculate timing relative to beat
-            const beatPhase = timeSinceLastBeat % BEAT_INTERVAL;
-            const timingError = Math.min(beatPhase, BEAT_INTERVAL - beatPhase);
-            
-            tapTimes.push({ time: tapTime, error: timingError });
-            
-            let quality;
-            if (timingError < PERFECT_WINDOW) {
-                quality = 'perfect';
-                showFeedback('PERFECT!');
-                playTapSound(true);
-                vibrate(20);
-            } else if (timingError < GOOD_WINDOW) {
-                quality = 'good';
-                showFeedback('Good');
-                playTapSound(false);
-                vibrate(15);
-            } else {
-                quality = 'miss';
-                showFeedback('Miss');
-                vibrate([50, 50, 50]);
-                resetProgress();
-                return;
-            }
-            
-            updateProgress(quality);
-            beatCount++;
-            
-            if (beatCount >= 8) {
-                completeGame();
-            }
-        }
+            const tolerance = beatInterval * 0.35; // 35% tolerance
 
-        function showFeedback(text) {
-            const feedback = document.createElement('div');
-            feedback.className = 'timing-feedback';
-            feedback.textContent = text;
-            document.getElementById('tapZone').appendChild(feedback);
-            setTimeout(() => feedback.remove(), 500);
-        }
-
-        function updateProgress(quality) {
-            const bars = document.querySelectorAll('.progress-bar');
-            if (beatCount < bars.length) {
-                bars[beatCount].classList.add(quality);
-            }
-        }
-
-        function resetProgress() {
-            beatCount = 0;
-            tapTimes = [];
-            document.querySelectorAll('.progress-bar').forEach(bar => {
-                bar.className = 'progress-bar';
-            });
-        }
-
-        function completeGame() {
-            clearInterval(metronomeInterval);
-            
-            // Analyze tap patterns for human-like behavior
-            const avgError = tapTimes.reduce((sum, t) => sum + t.error, 0) / tapTimes.length;
-            const errorVariance = Math.max(...tapTimes.map(t => t.error)) - Math.min(...tapTimes.map(t => t.error));
-            const perfectCount = tapTimes.filter(t => t.error < PERFECT_WINDOW).length;
-            
-            // Human patterns: some variance, not too perfect, reasonable timing
-            const isHuman = avgError < GOOD_WINDOW && errorVariance > 20 && perfectCount >= 2;
-            
-            if (isHuman) {
-                playTapSound(true);
-                vibrate([20, 50, 20]);
+            if (Math.abs(timeSinceLastBeat) < tolerance || 
+                Math.abs(timeSinceLastBeat - beatInterval) < tolerance) {
                 
+                if (navigator.vibrate) {
+                    navigator.vibrate(20);
+                }
+
+                score++;
+                document.getElementById('score').textContent = score;
+                beatTimings.push(timeSinceLastBeat);
+
+                if (score >= targetBeats) {
+                    checkCompletion();
+                }
+            }
+        }
+
+        function checkCompletion() {
+            if (beatTimings.length < 3) return;
+
+            // Check for human-like variation in timing
+            const avgTiming = beatTimings.reduce((a, b) => a + b, 0) / beatTimings.length;
+            const variance = beatTimings.reduce((sum, time) => {
+                return sum + Math.pow(time - avgTiming, 2);
+            }, 0) / beatTimings.length;
+
+            // Humans have natural variation (not perfect, but not random)
+            const hasHumanRhythm = variance > 100 && variance < 50000;
+
+            if (hasHumanRhythm) {
+                clearInterval(beatIntervalId);
+
+                try {
+                    const ctx = initAudioContext();
+                    [600, 800, 1000].forEach((freq, i) => {
+                        setTimeout(() => {
+                            const oscillator = ctx.createOscillator();
+                            const gainNode = ctx.createGain();
+                            oscillator.connect(gainNode);
+                            gainNode.connect(ctx.destination);
+                            oscillator.frequency.value = freq;
+                            oscillator.type = 'sine';
+                            gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                            oscillator.start(ctx.currentTime);
+                            oscillator.stop(ctx.currentTime + 0.2);
+                        }, i * 100);
+                    });
+                } catch (e) {}
+
+                if (navigator.vibrate) {
+                    navigator.vibrate([50, 100, 50]);
+                }
+
                 setTimeout(() => {
                     document.getElementById('gameContent').style.display = 'none';
                     document.getElementById('successMessage').classList.add('show');
-                    
+
                     setTimeout(() => {
                         window.parent.postMessage('captcha_success', '*');
                     }, 1500);
                 }, 500);
             } else {
-                resetProgress();
-                startMetronome();
+                // Reset for bot-like behavior
+                score = 0;
+                beatTimings = [];
+                document.getElementById('score').textContent = score;
             }
         }
-
-        initGame();
     </script>
 </body>
 </html>
