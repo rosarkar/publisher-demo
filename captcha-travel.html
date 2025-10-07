@@ -124,29 +124,23 @@
 
         .endpoint {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 24px;
             pointer-events: none;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .start-point {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            top: 50%;
-            left: 20px;
-            transform: translateY(-50%);
         }
 
         .end-point {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
         }
 
         .progress-display {
@@ -239,20 +233,10 @@
         </div>
 
         <div id="gameContent">
-            <div class="game-title">Draw your flight path</div>
-            <div class="instructions">Connect the departure to arrival city</div>
+            <div class="game-title">Plan your flight route</div>
+            <div class="instructions">Draw a path from departure to arrival</div>
 
-            <div class="route-info">
-                <div class="city">
-                    <div class="city-icon">🌆</div>
-                    <div class="city-name">New York</div>
-                </div>
-                <div class="arrow">→</div>
-                <div class="city">
-                    <div class="city-icon">🗼</div>
-                    <div class="city-name">Paris</div>
-                </div>
-            </div>
+            <div class="route-info" id="routeInfo"></div>
 
             <div class="progress-display">
                 <div class="progress-text">Flight Progress</div>
@@ -263,20 +247,47 @@
 
             <div class="canvas-container">
                 <canvas id="drawCanvas"></canvas>
-                <div class="endpoint start-point">🛫</div>
-                <div class="endpoint end-point">🛬</div>
+                <div class="endpoint start-point" id="startPoint">🛫</div>
+                <div class="endpoint end-point" id="endPoint">🛬</div>
             </div>
 
-            <div class="hint-text">Draw from left to right</div>
+            <div class="hint-text">Drag from departure to arrival city</div>
 
-            <div class="promo-banner">
-                <div class="promo-text">Book your dream vacation. Save 25%:</div>
-                <div class="promo-code">JET25</div>
-            </div>
+            <div class="promo-banner" id="promoBanner"></div>
         </div>
     </div>
 
     <script>
+        // City routes with icons and promo codes
+        const routes = [
+            { from: 'New York', fromIcon: '🌆', to: 'Paris', toIcon: '🗼', promo: 'JET25', deal: 'Save 25% on European flights' },
+            { from: 'Tokyo', fromIcon: '🗾', to: 'Sydney', toIcon: '🦘', promo: 'ASIA30', deal: 'Save 30% on Pacific routes' },
+            { from: 'London', fromIcon: '🏰', to: 'Dubai', toIcon: '🕌', promo: 'LUXURY20', deal: 'Save 20% on premium cabins' },
+            { from: 'Miami', fromIcon: '🌴', to: 'Rio', toIcon: '⛱️', promo: 'BEACH15', deal: 'Save 15% on beach destinations' },
+            { from: 'Singapore', fromIcon: '🏙️', to: 'Bali', toIcon: '🏝️', promo: 'ISLAND25', deal: 'Save 25% on island getaways' }
+        ];
+
+        const selectedRoute = routes[Math.floor(Math.random() * routes.length)];
+
+        // Set route info
+        document.getElementById('routeInfo').innerHTML = `
+            <div class="city">
+                <div class="city-icon">${selectedRoute.fromIcon}</div>
+                <div class="city-name">${selectedRoute.from}</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="city">
+                <div class="city-icon">${selectedRoute.toIcon}</div>
+                <div class="city-name">${selectedRoute.to}</div>
+            </div>
+        `;
+
+        // Set promo banner
+        document.getElementById('promoBanner').innerHTML = `
+            <div class="promo-text">${selectedRoute.deal}:</div>
+            <div class="promo-code">${selectedRoute.promo}</div>
+        `;
+
         const canvas = document.getElementById('drawCanvas');
         const ctx = canvas.getContext('2d');
         
@@ -285,6 +296,24 @@
             const container = canvas.parentElement;
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
+            
+            // Randomize start and end positions
+            const margin = 60;
+            const startX = margin + Math.random() * 40;
+            const startY = margin + Math.random() * (canvas.height - 2 * margin);
+            const endX = canvas.width - margin - Math.random() * 40;
+            const endY = margin + Math.random() * (canvas.height - 2 * margin);
+            
+            startPoint = { x: startX, y: startY };
+            endPoint = { x: endX, y: endY };
+            
+            // Position endpoint elements
+            const startEl = document.getElementById('startPoint');
+            const endEl = document.getElementById('endPoint');
+            startEl.style.left = (startX - 25) + 'px';
+            startEl.style.top = (startY - 25) + 'px';
+            endEl.style.left = (endX - 25) + 'px';
+            endEl.style.top = (endY - 25) + 'px';
         }
         resizeCanvas();
 
@@ -294,21 +323,25 @@
         let endPoint = { x: canvas.width - 40, y: canvas.height / 2 };
 
         function playSound(frequency, duration = 0.1) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = frequency;
-            oscillator.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration);
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                // Ignore audio errors
+            }
         }
 
         function vibrate(duration = 10) {
@@ -329,9 +362,9 @@
             e.preventDefault();
             const point = getPoint(e);
             
-            // Check if starting near start point
+            // Check if starting near start point - MUCH more lenient
             const distToStart = Math.hypot(point.x - startPoint.x, point.y - startPoint.y);
-            if (distToStart < 50) {
+            if (distToStart < 80) { // Increased from 50
                 isDrawing = true;
                 pathPoints = [point];
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -361,8 +394,10 @@
                 ctx.stroke();
             }
             
-            // Update progress
-            const progress = Math.min(100, (point.x / canvas.width) * 100);
+            // Update progress based on distance to end
+            const distToEnd = Math.hypot(point.x - endPoint.x, point.y - endPoint.y);
+            const totalDist = Math.hypot(endPoint.x - startPoint.x, endPoint.y - startPoint.y);
+            const progress = Math.min(100, Math.max(0, 100 - (distToEnd / totalDist * 100)));
             document.getElementById('progressFill').style.width = progress + '%';
             
             // Play subtle sound periodically
@@ -379,8 +414,9 @@
             const point = getPoint(e);
             const distToEnd = Math.hypot(point.x - endPoint.x, point.y - endPoint.y);
             
-            if (distToEnd < 50 && pathPoints.length > 15) {
-                checkPath();
+            // MUCH more lenient completion check
+            if (distToEnd < 80 && pathPoints.length > 10) { // Reduced from 80/15
+                completeGame();
             } else {
                 // Failed - reset
                 playSound(300);
@@ -401,62 +437,6 @@
                 y: clientY - rect.top,
                 time: Date.now()
             };
-        }
-
-        function checkPath() {
-            // Analyze path for human-like characteristics
-            const pathLength = calculatePathLength();
-            const straightLineDistance = Math.hypot(
-                endPoint.x - startPoint.x,
-                endPoint.y - startPoint.y
-            );
-            
-            // Calculate metrics
-            const directionChanges = calculateDirectionChanges();
-            const duration = pathPoints[pathPoints.length - 1].time - pathPoints[0].time;
-            
-            // More lenient validation - humans draw with some waviness
-            const pathRatio = pathLength / straightLineDistance;
-            const hasReasonablePath = pathRatio > 1.02 && pathRatio < 3.0;
-            const hasReasonableDuration = duration > 200 && duration < 10000;
-            const hasVariation = directionChanges > 5 && directionChanges < 200;
-            
-            const isHuman = hasReasonablePath && hasReasonableDuration && hasVariation && pathPoints.length > 15;
-            
-            if (isHuman) {
-                completeGame();
-            } else {
-                playSound(300);
-                vibrate([50, 50, 50]);
-                resetCanvas();
-            }
-        }
-
-        function calculatePathLength() {
-            let length = 0;
-            for (let i = 1; i < pathPoints.length; i++) {
-                const dx = pathPoints[i].x - pathPoints[i - 1].x;
-                const dy = pathPoints[i].y - pathPoints[i - 1].y;
-                length += Math.hypot(dx, dy);
-            }
-            return length;
-        }
-
-        function calculateDirectionChanges() {
-            let changes = 0;
-            for (let i = 2; i < pathPoints.length; i++) {
-                const angle1 = Math.atan2(
-                    pathPoints[i - 1].y - pathPoints[i - 2].y,
-                    pathPoints[i - 1].x - pathPoints[i - 2].x
-                );
-                const angle2 = Math.atan2(
-                    pathPoints[i].y - pathPoints[i - 1].y,
-                    pathPoints[i].x - pathPoints[i - 1].x
-                );
-                const angleDiff = Math.abs(angle2 - angle1);
-                if (angleDiff > 0.1) changes++;
-            }
-            return changes;
         }
 
         function resetCanvas() {
