@@ -191,6 +191,41 @@
             margin-left: 4px;
         }
 
+        .demo-guide-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 12px;
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .demo-guide-btn:hover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .guide-icon {
+            font-size: 18px;
+        }
+
+        .guide-text {
+            display: none;
+        }
+
+        @media (min-width: 640px) {
+            .guide-text {
+                display: inline;
+            }
+        }
+
         .view-toggle {
             position: fixed;
             top: 80px;
@@ -1184,7 +1219,12 @@
                 <div class="logo">Canvas Protocol</div>
                 <div class="dashboard-subtitle">Nike Advertiser Dashboard</div>
             </div>
-            <div class="user-profile" onclick="toggleAdvertiserDropdown()">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button class="demo-guide-btn" onclick="showWelcomeOverlay()" title="Show Demo Guide">
+                    <span class="guide-icon">📖</span>
+                    <span class="guide-text">Demo Guide</span>
+                </button>
+                <div class="user-profile" onclick="toggleAdvertiserDropdown()">
                 <div class="user-avatar">🏃</div>
                 <div class="user-details">
                     <div class="advertiser-name">Nike</div>
@@ -1218,6 +1258,7 @@
                         </div>
                     </a>
                 </div>
+            </div>
             </div>
         </div>
     </header>
@@ -1580,6 +1621,10 @@
         function closeWelcomeOverlay() {
             document.getElementById('welcomeOverlay').classList.remove('active');
             localStorage.setItem('hasSeenNikeDemoOverlay', 'true');
+        }
+
+        function showWelcomeOverlay() {
+            document.getElementById('welcomeOverlay').classList.add('active');
         }
 
         function resetOverlay() {
