@@ -595,6 +595,586 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        /* Welcome Overlay Styles */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .welcome-overlay.active {
+            display: flex;
+        }
+
+        .welcome-content {
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.98) 0%, rgba(20, 20, 30, 0.98) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .overlay-close {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .overlay-header {
+            text-align: center;
+            padding: 40px 40px 20px 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .overlay-logo {
+            margin-bottom: 20px;
+        }
+
+        .overlay-header h2 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .overlay-subtitle {
+            font-size: 16px;
+            color: #8892b0;
+            font-weight: 500;
+        }
+
+        .overlay-body {
+            padding: 30px 40px;
+        }
+
+        .demo-explainer {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .demo-explainer h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .demo-explainer p {
+            color: #8892b0;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .dropdown-explainer {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(234, 88, 12, 0.1) 100%);
+            border: 2px solid rgba(249, 115, 22, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dropdown-explainer h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .dropdown-demo {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .dropdown-visual {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(249, 115, 22, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(249, 115, 22, 0.2);
+        }
+
+        .dropdown-icon {
+            font-size: 32px;
+        }
+
+        .dropdown-visual span {
+            color: #f97316;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .dropdown-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dropdown-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .dropdown-section strong {
+            display: block;
+            color: white;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .profile-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .profile-pill {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .profile-pill.advertiser {
+            background: rgba(249, 115, 22, 0.1);
+            border-color: rgba(249, 115, 22, 0.3);
+            color: #f97316;
+        }
+
+        .profile-pill.publisher {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.3);
+            color: #667eea;
+        }
+
+        .dropdown-section p {
+            color: #8892b0;
+            font-size: 12px;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .targeting-explainer {
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .targeting-explainer h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .targeting-examples {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .targeting-example {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        .example-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .example-icon {
+            font-size: 20px;
+        }
+
+        .example-header strong {
+            color: white;
+            font-size: 13px;
+        }
+
+        .targeting-example p {
+            color: #8892b0;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .highlight {
+            color: #a78bfa;
+            font-weight: 600;
+        }
+
+        .appears-in {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .appears-in .yes {
+            color: #10b981;
+        }
+
+        .appears-in .no {
+            color: #ef4444;
+            opacity: 0.7;
+        }
+
+        .targeting-note {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #8892b0;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .targeting-note strong {
+            color: #a78bfa;
+        }
+
+        .demo-magic {
+            margin-bottom: 30px;
+        }
+
+        .demo-magic h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .magic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .magic-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .magic-icon {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .magic-item strong {
+            display: block;
+            color: white;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .magic-item p {
+            color: #8892b0;
+            font-size: 11px;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .demo-experiments {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .demo-experiments h3 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .experiment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .experiment {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            color: #8892b0;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .experiment strong {
+            color: #10b981;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .demo-flow {
+            background: rgba(249, 115, 22, 0.05);
+            border: 1px solid rgba(249, 115, 22, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .demo-flow h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .flow-step {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            min-width: 180px;
+            flex-shrink: 0;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .flow-step p {
+            color: #8892b0;
+            font-size: 12px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .flow-step strong {
+            color: white;
+        }
+
+        .flow-arrow {
+            color: #f97316;
+            font-size: 24px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .demo-value {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .value-prop h4 {
+            font-size: 16px;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .value-prop ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .value-prop li {
+            color: #8892b0;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .value-prop li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .demo-tip {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #8892b0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .demo-tip strong {
+            color: #60a5fa;
+        }
+
+        .overlay-footer {
+            padding: 20px 40px 40px 40px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .overlay-btn-primary {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
+        }
+
+        .overlay-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(249, 115, 22, 0.4);
+        }
+
+        .overlay-btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 14px 32px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .overlay-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .welcome-content {
+                border-radius: 16px;
+                max-height: 95vh;
+            }
+
+            .overlay-header {
+                padding: 30px 20px 15px 20px;
+            }
+
+            .overlay-header h2 {
+                font-size: 24px;
+            }
+
+            .overlay-body {
+                padding: 20px;
+            }
+
+            .magic-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .flow-steps {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+                align-self: center;
+            }
+
+            .flow-step {
+                min-width: 100%;
+            }
+
+            .overlay-footer {
+                padding: 15px 20px 30px 20px;
+                flex-direction: column;
+            }
+
+            .overlay-btn-primary,
+            .overlay-btn-secondary {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -989,6 +1569,210 @@
 
         // Load campaigns on page load
         window.addEventListener('load', loadCampaigns);
+        // Show welcome overlay on first visit
+        window.addEventListener('load', function() {
+            const hasSeenOverlay = localStorage.getItem('hasSeenNikeDemoOverlay');
+            if (!hasSeenOverlay) {
+                document.getElementById('welcomeOverlay').classList.add('active');
+            }
+        });
+
+        function closeWelcomeOverlay() {
+            document.getElementById('welcomeOverlay').classList.remove('active');
+            localStorage.setItem('hasSeenNikeDemoOverlay', 'true');
+        }
+
+        function resetOverlay() {
+            localStorage.removeItem('hasSeenNikeDemoOverlay');
+            location.reload();
+        }
     </script>
+
+    <!-- Welcome Overlay -->
+    <div id="welcomeOverlay" class="welcome-overlay">
+        <div class="welcome-content">
+            <button class="overlay-close" onclick="closeWelcomeOverlay()">✕</button>
+            
+            <div class="overlay-header">
+                <div class="overlay-logo">
+                    <span style="font-size: 48px;">🎯</span>
+                </div>
+                <h2>Welcome to Canvas Protocol</h2>
+                <p class="overlay-subtitle">Interactive Advertiser Dashboard Demo</p>
+            </div>
+
+            <div class="overlay-body">
+                <div class="demo-explainer">
+                    <h3>🚀 What You're Looking At</h3>
+                    <p>This is a <strong>fully functional two-sided marketplace simulation</strong> with 3 independent advertisers and 3 independent publishers. You're currently logged in as <strong>Nike</strong>. Each advertiser and publisher has their own unique campaigns, bids, and analytics.</p>
+                </div>
+
+                <div class="dropdown-explainer">
+                    <h3>🔄 The Dropdown is Your Control Panel</h3>
+                    <div class="dropdown-demo">
+                        <div class="dropdown-visual">
+                            <div class="dropdown-icon">👤</div>
+                            <span>Click the profile dropdown in the top-right corner ↗️</span>
+                        </div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-section">
+                                <strong>Switch to Advertisers:</strong>
+                                <div class="profile-pills">
+                                    <span class="profile-pill advertiser">🏃 Nike</span>
+                                    <span class="profile-pill advertiser">🍔 McDonald's</span>
+                                    <span class="profile-pill advertiser">₿ Coinbase</span>
+                                </div>
+                                <p>Each has their own independent campaigns, budgets, and performance data</p>
+                            </div>
+                            <div class="dropdown-section">
+                                <strong>Switch to Publishers:</strong>
+                                <div class="profile-pills">
+                                    <span class="profile-pill publisher">📱 TechDaily</span>
+                                    <span class="profile-pill publisher">💪 FitZone</span>
+                                    <span class="profile-pill publisher">₿ CryptoNews</span>
+                                </div>
+                                <p>Each receives different campaigns based on advertiser targeting</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="targeting-explainer">
+                    <h3>🎯 Campaign Targeting is Specific & Isolated</h3>
+                    <div class="targeting-examples">
+                        <div class="targeting-example">
+                            <div class="example-header">
+                                <span class="example-icon">🍔</span>
+                                <strong>McDonald's Example</strong>
+                            </div>
+                            <p>If McDonald's creates a campaign targeting <span class="highlight">Fitness Publishers</span>, that campaign will ONLY appear in:</p>
+                            <div class="appears-in">
+                                <span class="yes">✓ FitZone's dashboard</span>
+                                <span class="no">✗ TechDaily's dashboard</span>
+                                <span class="no">✗ CryptoNews's dashboard</span>
+                                <span class="no">✗ Nike's advertiser dashboard</span>
+                            </div>
+                        </div>
+                        <div class="targeting-example">
+                            <div class="example-header">
+                                <span class="example-icon">🏃</span>
+                                <strong>Nike Example</strong>
+                            </div>
+                            <p>If Nike targets <span class="highlight">Tech + Crypto Publishers</span>, that campaign appears in:</p>
+                            <div class="appears-in">
+                                <span class="yes">✓ TechDaily's dashboard</span>
+                                <span class="yes">✓ CryptoNews's dashboard</span>
+                                <span class="no">✗ FitZone's dashboard</span>
+                                <span class="no">✗ Other advertisers' dashboards</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="targeting-note">
+                        <strong>Key Point:</strong> Each advertiser sees ONLY their own campaigns. Each publisher sees ONLY campaigns targeting their category.
+                    </div>
+                </div>
+
+                <div class="demo-flow">
+                    <h3>🎬 The "WOW" Demo Path (2 Minutes)</h3>
+                    <div class="flow-steps">
+                        <div class="flow-step">
+                            <span class="step-number">1</span>
+                            <p><strong>Create Nike Campaign:</strong> Click "Create New Campaign", name it "Air Max Promo", select burger CAPTCHA, target Tech Publishers, set $80 CPM</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <span class="step-number">2</span>
+                            <p><strong>Switch to TechDaily:</strong> Click dropdown ↗️, select "TechDaily (Tech News)" - see Nike's campaign appear in "Available Campaigns"</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <span class="step-number">3</span>
+                            <p><strong>Visit Live Site:</strong> Click "View Site" button - opens TechDaily.com where users see locked content</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <span class="step-number">4</span>
+                            <p><strong>Complete CAPTCHA:</strong> Click "Verify I'm Human" → Play Nike's burger mini-game → Unlock article</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <span class="step-number">5</span>
+                            <p><strong>See Real-Time Updates:</strong> Return to Nike dashboard → Completions +1, Spend increases. Return to TechDaily → Revenue increases!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-magic">
+                    <h3>✨ What Makes This Demo Special</h3>
+                    <div class="magic-grid">
+                        <div class="magic-item">
+                            <span class="magic-icon">🔐</span>
+                            <strong>True Isolation</strong>
+                            <p>6 completely independent accounts with separate data - just like the real system</p>
+                        </div>
+                        <div class="magic-item">
+                            <span class="magic-icon">⚡</span>
+                            <strong>Real-Time Sync</strong>
+                            <p>Open multiple tabs, complete a CAPTCHA, watch all dashboards update instantly via localStorage events</p>
+                        </div>
+                        <div class="magic-item">
+                            <span class="magic-icon">🎮</span>
+                            <strong>5 Unique CAPTCHAs</strong>
+                            <p>Each a playable mini-game: burger grid selection, target hitting, crypto swipes, fitness taps, travel paths</p>
+                        </div>
+                        <div class="magic-item">
+                            <span class="magic-icon">📊</span>
+                            <strong>Complete Analytics</strong>
+                            <p>Success rates, completion times, revenue per campaign, spending per advertiser - all tracked</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-experiments">
+                    <h3>🧪 Try These Experiments</h3>
+                    <div class="experiment-list">
+                        <div class="experiment">
+                            <strong>Experiment 1:</strong> Create McDonald's campaign targeting Fitness → Switch to FitZone (see it) → Switch to TechDaily (don't see it)
+                        </div>
+                        <div class="experiment">
+                            <strong>Experiment 2:</strong> Create 3 different campaigns from Nike → Switch to Coinbase → Notice Nike's campaigns don't appear
+                        </div>
+                        <div class="experiment">
+                            <strong>Experiment 3:</strong> Open 4 browser tabs (Nike, TechDaily, TechDaily Site, Analytics) → Complete CAPTCHA → Watch cascade updates
+                        </div>
+                        <div class="experiment">
+                            <strong>Experiment 4:</strong> Preview each of the 5 CAPTCHA types to see different brand interaction mechanics
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-value">
+                    <div class="value-prop">
+                        <h4>💡 What This Demo Proves</h4>
+                        <ul>
+                            <li><strong>Marketplace Mechanics Work:</strong> Advertisers bid, publishers accept, users complete, money flows - all without blockchain yet</li>
+                            <li><strong>Targeting is Precise:</strong> Campaigns only reach publishers in selected categories, maximizing advertiser ROI</li>
+                            <li><strong>Data Flows Correctly:</strong> Completion counts, spend tracking, revenue attribution all update in real-time</li>
+                            <li><strong>User Experience is Engaging:</strong> CAPTCHAs are actually fun mini-games, not boring traffic lights</li>
+                            <li><strong>Ready for Integration:</strong> This entire flow will be secured by EigenLayer AVS with cryptographic verification</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="demo-tip">
+                    <strong>🎯 For Maximum Impact:</strong> Show an investor the complete loop live - create campaign, switch views, complete CAPTCHA, show revenue update. Takes 90 seconds and demonstrates the entire value proposition of Canvas Protocol.
+                </div>
+            </div>
+
+            <div class="overlay-footer">
+                <button class="overlay-btn-primary" onclick="closeWelcomeOverlay()">
+                    Get Started →
+                </button>
+                <button class="overlay-btn-secondary" onclick="window.open('https://rosarkar.github.io/', '_blank')">
+                    📄 View Full Project Details
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
