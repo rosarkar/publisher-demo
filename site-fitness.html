@@ -522,6 +522,9 @@
             });
         }
 
+        // CRITICAL: Set publisher ID for tracking
+        const publisherId = 'fitness';  // FitLife Journal
+
         function trackCompletion(captchaType) {
             // Get all campaigns
             const campaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
@@ -532,12 +535,24 @@
             if (campaignIndex !== -1) {
                 const campaign = campaigns[campaignIndex];
                 
-                // Increment completions
-                campaign.completions = (campaign.completions || 0) + 1;
+                // Initialize per-publisher tracking objects if they don't exist
+                if (!campaign.completionsByPublisher) {
+                    campaign.completionsByPublisher = { tech: 0, fitness: 0, crypto: 0 };
+                }
+                if (!campaign.spendByPublisher) {
+                    campaign.spendByPublisher = { tech: 0, fitness: 0, crypto: 0 };
+                }
                 
-                // Calculate actual spend (CPM / 1000)
+                // Calculate cost per completion
                 const costPerCompletion = campaign.cpmBid / 1000;
+                
+                // Update TOTAL completions and spend
+                campaign.completions = (campaign.completions || 0) + 1;
                 campaign.actualSpend = (campaign.actualSpend || 0) + costPerCompletion;
+                
+                // Update PER-PUBLISHER completions and spend
+                campaign.completionsByPublisher[publisherId] = (campaign.completionsByPublisher[publisherId] || 0) + 1;
+                campaign.spendByPublisher[publisherId] = (campaign.spendByPublisher[publisherId] || 0) + costPerCompletion;
                 
                 // Check if daily budget is reached
                 if (campaign.actualSpend >= campaign.dailyBudget) {
@@ -549,8 +564,11 @@
                 
                 console.log('✅ Completion tracked:', {
                     campaign: campaign.brandName,
-                    completions: campaign.completions,
-                    spend: campaign.actualSpend,
+                    publisher: publisherId,
+                    totalCompletions: campaign.completions,
+                    publisherCompletions: campaign.completionsByPublisher[publisherId],
+                    totalSpend: campaign.actualSpend.toFixed(2),
+                    publisherSpend: campaign.spendByPublisher[publisherId].toFixed(2),
                     status: campaign.status
                 });
             }
