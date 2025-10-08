@@ -605,6 +605,9 @@
     </div>
 
     <script>
+        // CRITICAL: Set publisher ID for filtering
+        const publisherId = 'tech';
+
         const captchaMetadata = {
             'burger': { icon: '🍔', name: 'BurgerBlast' },
             'gaming': { icon: '🎮', name: 'PixelArena' },
@@ -616,10 +619,10 @@
         function loadAnalytics() {
             const campaigns = JSON.parse(localStorage.getItem('advertiserCampaigns') || '[]');
             
-            // Calculate lifetime earnings
+            // Calculate lifetime earnings ONLY for this publisher
             const lifetimeEarnings = campaigns.reduce((sum, c) => {
-                const earnings = (c.completions || 0) * (c.cpmBid / 1000);
-                return sum + earnings;
+                const publisherSpend = (c.spendByPublisher && c.spendByPublisher[publisherId]) || 0;
+                return sum + publisherSpend;
             }, 0);
             
             document.getElementById('lifetimeEarnings').textContent = '$' + lifetimeEarnings.toFixed(2);
@@ -653,9 +656,10 @@
             const chart = document.getElementById('revenueChart');
             const days = 7;
             
-            // Generate sample data based on actual completions
+            // Generate sample data based on actual publisher-specific spend
             const totalRevenue = campaigns.reduce((sum, c) => {
-                return sum + ((c.completions || 0) * (c.cpmBid / 1000));
+                const publisherSpend = (c.spendByPublisher && c.spendByPublisher[publisherId]) || 0;
+                return sum + publisherSpend;
             }, 0);
             
             let chartHTML = '';
@@ -682,18 +686,30 @@
         function renderCampaignPerformance(campaigns) {
             const container = document.getElementById('campaignPerformance');
             
-            if (campaigns.length === 0) {
-                container.innerHTML = '<p style="color: #8892b0; text-align: center; padding: 40px;">No campaign data available</p>';
+            // Filter campaigns that target this publisher
+            const relevantCampaigns = campaigns.filter(c => 
+                c.targetPublishers && c.targetPublishers.includes(publisherId)
+            );
+            
+            if (relevantCampaigns.length === 0) {
+                container.innerHTML = '<p style="color: #8892b0; text-align: center; padding: 40px;">No campaign data available for this publisher</p>';
                 return;
             }
             
-            // Sort by revenue
-            const sortedCampaigns = campaigns
+            // Calculate publisher-specific revenue and sort
+            const sortedCampaigns = relevantCampaigns
                 .map(c => ({
                     ...c,
-                    revenue: (c.completions || 0) * (c.cpmBid / 1000)
+                    publisherCompletions: (c.completionsByPublisher && c.completionsByPublisher[publisherId]) || 0,
+                    revenue: (c.spendByPublisher && c.spendByPublisher[publisherId]) || 0
                 }))
+                .filter(c => c.publisherCompletions > 0)  // Only show campaigns with activity
                 .sort((a, b) => b.revenue - a.revenue);
+            
+            if (sortedCampaigns.length === 0) {
+                container.innerHTML = '<p style="color: #8892b0; text-align: center; padding: 40px;">No completed campaigns yet</p>';
+                return;
+            }
             
             container.innerHTML = sortedCampaigns.map(campaign => {
                 const metadata = captchaMetadata[campaign.captchaType];
@@ -703,7 +719,7 @@
                             <div class="campaign-icon">${metadata.icon}</div>
                             <div class="campaign-details">
                                 <h3>${campaign.brandName}</h3>
-                                <p>${(campaign.completions || 0).toLocaleString()} completions • ${(campaign.successRate || 0).toFixed(1)}% success rate</p>
+                                <p>${campaign.publisherCompletions.toLocaleString()} completions on your site • ${(campaign.successRate || 0).toFixed(1)}% success rate</p>
                             </div>
                         </div>
                         <div class="campaign-metrics">
@@ -722,18 +738,25 @@
         }
 
         function updateInsights(campaigns) {
-            if (campaigns.length === 0) return;
+            const relevantCampaigns = campaigns.filter(c => 
+                c.targetPublishers && c.targetPublishers.includes(publisherId)
+            );
             
-            // Find best performer
-            const bestCampaign = campaigns.reduce((best, current) => {
-                const currentRevenue = (current.completions || 0) * (current.cpmBid / 1000);
-                const bestRevenue = (best.completions || 0) * (best.cpmBid / 1000);
+            if (relevantCampaigns.length === 0) return;
+            
+            // Find best performer for this publisher
+            const bestCampaign = relevantCampaigns.reduce((best, current) => {
+                const currentRevenue = (current.spendByPublisher && current.spendByPublisher[publisherId]) || 0;
+                const bestRevenue = (best.spendByPublisher && best.spendByPublisher[publisherId]) || 0;
                 return currentRevenue > bestRevenue ? current : best;
             });
             
-            document.getElementById('bestCampaign').textContent = bestCampaign.brandName;
-            const bestRevenue = (bestCampaign.completions || 0) * (bestCampaign.cpmBid / 1000);
-            document.getElementById('bestCampaignDesc').textContent = `Generated $${bestRevenue.toFixed(2)} in revenue`;
+            const bestRevenue = (bestCampaign.spendByPublisher && bestCampaign.spendByPublisher[publisherId]) || 0;
+            
+            if (bestRevenue > 0) {
+                document.getElementById('bestCampaign').textContent = bestCampaign.brandName;
+                document.getElementById('bestCampaignDesc').textContent = `Generated $${bestRevenue.toFixed(2)} in revenue on your site`;
+            }
             
             // Simulate growth rate
             const growthRate = (Math.random() * 30 + 5).toFixed(1);
